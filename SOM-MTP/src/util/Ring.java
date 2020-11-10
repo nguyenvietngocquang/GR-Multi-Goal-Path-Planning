@@ -22,6 +22,11 @@ public class Ring {
 		return neurons.size();
 	}
 
+	// Returns the index of neurons in the list
+	public int indexOf(Neuron neuron) {
+		return neurons.indexOf(neuron);
+	}
+
 	// Returns the neuron of index i
 	public Neuron get(int i) {
 		return neurons.get(i);

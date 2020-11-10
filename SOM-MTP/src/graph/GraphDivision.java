@@ -193,5 +193,8 @@ public class GraphDivision {
 			}
 		}
 
+		for (Neuron neuron : neurons) {
+			this.visit.remove(neuron);
+		}
 	}
 }
