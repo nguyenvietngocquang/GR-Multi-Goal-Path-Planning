@@ -1,0 +1,31 @@
+1 epoch:
+SOM:	4.306s
+Length:	263.26721360724264
+
+2 epochs:
+SOM:	5.677s
+Length:	295.52205026935064
+
+3 epochs:
+SOM:	8.119s
+Length:	298.38577370093805
+
+4 epochs:
+SOM:	8.936s
+Length:	296.01948822357684
+
+5 epochs:
+SOM:	11.124s
+Length:	287.53671364371417
+
+10 epochs:
+SOM:	19.457s
+Length:	289.83493178327916
+
+15 epochs:
+SOM:	32.434s
+Length:	290.5994693089648
+
+20 epochs:
+SOM:	37.785s
+Length:	289.83734710706483
