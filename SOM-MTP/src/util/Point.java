@@ -115,4 +115,11 @@ public class Point {
 		return false;
 	}
 
+	// Check if is the end point of the line
+	public boolean isEndPointOfLine(Line line) {
+		if (this.isEquals(line.firstPoint) || this.isEquals(line.secondPoint))
+			return true;
+		return false;
+	}
+
 }

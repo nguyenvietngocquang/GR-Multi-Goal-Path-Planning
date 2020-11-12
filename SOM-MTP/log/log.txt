@@ -1,69 +1,31 @@
 1 epoch:
-- Init:		0.005s
-- SOM:		12.69s
-- Path:		0.01s
-- GUI:		0.009s
-Length:	286.704310799617
+SOM:	4.306s
+Length:	263.26721360724264
 
 2 epochs:
-- Init:		0.002s
-- SOM:		32.524s
-- Path:		0.012s
-- GUI:		0.009s
-Length:	307.79748359371047
+SOM:	5.677s
+Length:	295.52205026935064
 
 3 epochs:
-- Init:		0.005s
-- SOM:		40.295s
-- Path:		0.011s
-- GUI:		0.013s
-Length:	352.703215458489
+SOM:	8.119s
+Length:	298.38577370093805
 
 4 epochs:
-- Init:		0.003s
-- SOM:		46.432s
-- Path:		0.015s
-- GUI:		0.011s
-Length:	328.512761866476
+SOM:	8.936s
+Length:	296.01948822357684
 
 5 epochs:
-- Init:		0.004s
-- SOM:		65.323s
-- Path:		0.011s
-- GUI:		0.009s
-Length:	370.79310965643594
-
-6 epochs:
-- Init:		0.003s
-- SOM:		76.635s
-- Path:		0.012s
-- GUI:		0.011s
-Length:	331.9053490943484
-
-7 epochs:
-- Init:		0.004s
-- SOM:		87.895s
-- Path:		0.008s
-- GUI:		0.01s
-Length:	328.3501895057905
-
-8 epochs:
-- Init:		0.005s
-- SOM:		104.388s
-- Path:		0.009s
-- GUI:		0.009s
-Length:	290.16667565455737
-
-9 epochs:
-- Init:		0.004s
-- SOM:		127.609s
-- Path:		0.011s
-- GUI:		0.01s
-Length:	290.4657859708841
+SOM:	11.124s
+Length:	287.53671364371417
 
 10 epochs:
-- Init:		0.005s
-- SOM:		137.138s
-- Path:		0.011s
-- GUI:		0.01s
-Length:	289.57999362828616
+SOM:	19.457s
+Length:	289.83493178327916
+
+15 epochs:
+SOM:	32.434s
+Length:	290.5994693089648
+
+20 epochs:
+SOM:	37.785s
+Length:	289.83734710706483

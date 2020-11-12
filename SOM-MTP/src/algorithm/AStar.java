@@ -34,7 +34,6 @@ public class AStar {
 	}
 
 	public AStar(Graph myGraph, LinkedList<Point> points, LinkedList<Line> lines, Point start, Point end) {
-
 		double[][] graph = GraphArray(points, lines);
 		double[] distance = new double[points.size()]; // Shortest Distance from start
 		for (int i = 0; i < points.size(); i++) {
@@ -135,7 +134,6 @@ public class AStar {
 				length += path.get(k).distanceFrom(path.get(k + 1));
 			}
 		}
-
 	}
 
 }

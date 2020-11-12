@@ -30,10 +30,9 @@ public class Main {
 		scan.close();
 
 		try {
-			SOM som = new SOM(graph, pointsToVisit, 10);
+			SOM som = new SOM(graph, pointsToVisit, 15);
 
 			// Ve do thi
-			long start = System.currentTimeMillis();
 			for (Point point : pointsToVisit) {
 				gui.canvas.drawPoint(point, Color.GREEN);
 			}
@@ -44,10 +43,6 @@ public class Main {
 				gui.canvas.drawLine(som.path.get(i), som.path.get(i + 1), Color.BLACK);
 			}
 			gui.canvas.drawLine(som.path.getLast(), som.path.getFirst(), Color.BLACK);
-			long time = System.currentTimeMillis() - start;
-			System.out.println("- GUI:\t\t" + time / 1000F + "s");
-
-			System.out.println("Length:\t" + som.pathLength);
 
 		} catch (Exception e) {
 			System.out.println("Something went wrong!");
