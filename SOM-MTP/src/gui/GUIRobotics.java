@@ -113,7 +113,7 @@ public class GUIRobotics {
 		public void drawPoint(Point p, Color color) {
 			Graphics2D g2 = (Graphics2D) getGraphics();
 			g2.setColor(color);
-			g2.fill(new Ellipse2D.Double(OX + p.x * alpha - 3, OY - p.y * alpha - 3, 20, 20));
+			g2.fill(new Ellipse2D.Double(OX + p.x * alpha - 3, OY - p.y * alpha - 3, 10, 10));
 		}
 
 		public void drawLine(Point p1, Point p2) {
