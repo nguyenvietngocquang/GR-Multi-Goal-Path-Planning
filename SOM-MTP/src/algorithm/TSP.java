@@ -31,7 +31,7 @@ public class TSP {
 		this.n = (int) (visit.size() * 3);
 		this.G = 0.06 + 12.41 * n;
 		this.m = (int) (0.2 * n);
-		
+
 		long time = System.currentTimeMillis();
 
 		createRingOfNeurons();
@@ -39,7 +39,7 @@ public class TSP {
 		somAlgorithm();
 
 		getPath();
-		
+
 		time = System.currentTimeMillis() - time;
 		System.out.println("TSP:\t" + time / 1000F + "s");
 		System.out.println("Length:\t" + pathLength);
@@ -154,14 +154,6 @@ public class TSP {
 		path.add(ring.get(index[flag]));
 	}
 
-	public int indexOf(double arr[], double value) {
-		for (int i = 0; i < arr.length; i++) {
-			if (value == arr[i])
-				return i;
-		}
-		return -1;
-	}
-
 	// Compute neighborhood function
 	public double neighborhoodFunction(int epoch, Neuron winnerNeuron, Neuron currentNeuron) {
 		double radius = 4 * Math.exp(-1.0 * epoch / epochs);
@@ -181,5 +173,13 @@ public class TSP {
 		currentNeuron.y = currentNeuron.y + move * Math.sin(theta);
 
 		return temp;
+	}
+
+	public int indexOf(double arr[], double value) {
+		for (int i = 0; i < arr.length; i++) {
+			if (value == arr[i])
+				return i;
+		}
+		return -1;
 	}
 }

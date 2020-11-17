@@ -19,7 +19,21 @@ public class Main {
 
 		// Doc du lieu dau vao
 		Graph graph = new Graph("obstacles.txt");
-		Scanner scan = new Scanner(new File("visit.txt"));
+		LinkedList<Point> pointsToVisit = readPointData("visit.txt");
+
+		try {
+			SOM som = new SOM(graph, pointsToVisit, 20);
+			// Hien thi ket qua
+			showResult(pointsToVisit, som, gui);
+		} catch (Exception e) {
+			System.out.println("Something went wrong!");
+			e.printStackTrace();
+		}
+		System.out.println("End!");
+	}
+
+	public static LinkedList<Point> readPointData(String filename) throws IOException {
+		Scanner scan = new Scanner(new File(filename));
 		LinkedList<Point> pointsToVisit = new LinkedList<Point>();
 		double x = scan.nextDouble();
 		while (x != -1) {
@@ -29,25 +43,20 @@ public class Main {
 		}
 		scan.close();
 
-		try {
-			SOM som = new SOM(graph, pointsToVisit, 15);
+		return pointsToVisit;
+	}
 
-			// Ve do thi
-			for (Point point : pointsToVisit) {
-				gui.canvas.drawPoint(point, Color.GREEN);
-			}
-			for (Neuron neuron : som.inhibited) {
-				gui.canvas.drawPoint(neuron, Color.ORANGE);
-			}
-			for (int i = 0; i < som.path.size() - 1; i++) {
-				gui.canvas.drawLine(som.path.get(i), som.path.get(i + 1), Color.BLACK);
-			}
-			gui.canvas.drawLine(som.path.getLast(), som.path.getFirst(), Color.BLACK);
-
-		} catch (Exception e) {
-			System.out.println("Something went wrong!");
-			e.printStackTrace();
+	public static void showResult(LinkedList<Point> pointsToVisit, SOM som, GUIRobotics gui) {
+		// Ve do thi
+		for (Point point : pointsToVisit) {
+			gui.canvas.drawPoint(point, Color.GREEN);
 		}
-		System.out.println("End!");
+		for (Neuron neuron : som.inhibited) {
+			gui.canvas.drawPoint(neuron, Color.ORANGE);
+		}
+		for (int i = 0; i < som.path.size() - 1; i++) {
+			gui.canvas.drawLine(som.path.get(i), som.path.get(i + 1), Color.BLACK);
+		}
+		gui.canvas.drawLine(som.path.getLast(), som.path.getFirst(), Color.BLACK);
 	}
 }

@@ -205,14 +205,6 @@ public class SOM {
 		fw.close();
 	}
 
-	public int indexOf(double arr[], double value) {
-		for (int i = 0; i < arr.length; i++) {
-			if (value == arr[i])
-				return i;
-		}
-		return -1;
-	}
-
 	// Compute neighborhood function
 	public double neighborhoodFunction(int epoch, Neuron winnerNeuron, Neuron currentNeuron) {
 		double radius = 4 * Math.exp(-1.0 * epoch / epochs);
@@ -236,8 +228,8 @@ public class SOM {
 			if (length > move) {
 				// Update the coordinates
 				double theta = Math.atan2(Point2.y - Point1.y, Point2.x - Point1.x);
-				currentNeuron.x = Math.round((Point1.x + move * Math.cos(theta)) * 100000) / 100000.0;
-				currentNeuron.y = Math.round((Point1.y + move * Math.sin(theta)) * 100000) / 100000.0;
+				currentNeuron.x = round(Point1.x + move * Math.cos(theta));
+				currentNeuron.y = round(Point1.y + move * Math.sin(theta));
 				break;
 			}
 			move -= length;
@@ -245,6 +237,22 @@ public class SOM {
 		}
 
 		return temp;
+	}
+
+	public double round(double number) {
+		long temp = (long) (number * 1000000);
+		if (temp % 10 >= 5) {
+			temp += 10;
+		}
+		return (temp / 10) / 100000.0;
+	}
+
+	public int indexOf(double arr[], double value) {
+		for (int i = 0; i < arr.length; i++) {
+			if (value == arr[i])
+				return i;
+		}
+		return -1;
 	}
 
 }
