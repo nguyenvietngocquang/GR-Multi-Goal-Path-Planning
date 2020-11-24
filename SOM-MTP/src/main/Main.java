@@ -14,7 +14,7 @@ import util.Point;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		// Tao moi truong
-		GUIRobotics gui = new GUIRobotics(500, 110, 11);
+		GUIRobotics gui = new GUIRobotics(600, 110, 11);
 		gui.generateEnvironment("obstacles.txt");
 
 		// Doc du lieu dau vao
@@ -22,14 +22,14 @@ public class Main {
 		LinkedList<Point> pointsToVisit = readPointData("visit.txt");
 
 		try {
-			SOM som = new SOM(graph, pointsToVisit, 20);
+			SOM som = new SOM(graph, pointsToVisit, 50, "random");
 			// Hien thi ket qua
 			showResult(pointsToVisit, som, gui);
 		} catch (Exception e) {
 			System.out.println("Something went wrong!");
 			e.printStackTrace();
 		}
-		System.out.println("End!");
+		System.out.println("Done!");
 	}
 
 	public static LinkedList<Point> readPointData(String filename) throws IOException {

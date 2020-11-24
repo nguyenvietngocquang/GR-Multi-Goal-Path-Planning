@@ -23,7 +23,7 @@ public class Test {
 			System.out.println("Something went wrong!");
 			e.printStackTrace();
 		}
-		System.out.println("End!");
+		System.out.println("Done!");
 	}
 
 	public static LinkedList<Point> readPointData(String filename) throws IOException {
