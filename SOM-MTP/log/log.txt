@@ -1,31 +1,39 @@
-1 epoch:
-SOM:	4.306s
-Length:	263.26721360724264
+1. Test case 1:
+SOM:	5.816s
+Length:	208.3528165039072
 
-2 epochs:
-SOM:	5.677s
-Length:	295.52205026935064
+2. Test case 2:
+SOM:	6.455s
+Length:	265.4354802280393
 
-3 epochs:
-SOM:	8.119s
-Length:	298.38577370093805
+3. Test case 3:
+SOM:	17.547s
+Length:	284.2147663790356
 
-4 epochs:
-SOM:	8.936s
-Length:	296.01948822357684
+4. Test case 4:
+SOM:	30.822s
+Length:	305.3172997751382
 
-5 epochs:
-SOM:	11.124s
-Length:	287.53671364371417
+5. Test case 5:
+SOM:	143.381s
+Length:	408.35413913421627
 
-10 epochs:
-SOM:	19.457s
-Length:	289.83493178327916
+6. Test case 6:
+SOM:	15.981s
+Length:	335.0117116529193
 
-15 epochs:
-SOM:	32.434s
-Length:	290.5994693089648
+7. Test case 7:
+SOM:	25.818s
+Length:	384.484412954477
 
-20 epochs:
-SOM:	37.785s
-Length:	289.83734710706483
+8. Test case 8:
+SOM:	27.986s
+Length:	412.64450428088213
+
+9. Test case 9:
+SOM:	26.736s
+Length:	394.378189768965
+
+10. Test case 10:
+SOM:	34.084s
+Length:	289.8391388359807

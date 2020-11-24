@@ -34,7 +34,7 @@ public class SOM {
 
 	Random rd = new Random();
 
-	public SOM(Graph graph, LinkedList<Point> visit, int epochs) throws IOException {
+	public SOM(Graph graph, LinkedList<Point> visit, int epochs, String type) throws IOException {
 		this.graph = graph;
 		this.visit = visit;
 		this.epochs = epochs;
@@ -44,7 +44,7 @@ public class SOM {
 
 		long time = System.currentTimeMillis();
 
-		createRingOfNeurons();
+		createRingOfNeurons(type);
 
 		somAlgorithm();
 
@@ -55,44 +55,96 @@ public class SOM {
 		System.out.println("Length:\t" + pathLength);
 	}
 
-	public void createRingOfNeurons() {
+	public void createRingOfNeurons(String type) {
 		this.ring = new Ring();
 
-		// Trung binh toa do x, y cua cac neuron
-		double meanX = 0, meanY = 0;
-		Neuron[] neurons = new Neuron[n];
-		for (int i = 0; i < n; i++) {
-			Neuron neuron;
-			do {
-				neuron = new Neuron((int) (rd.nextDouble() * 10000000) / 100000.0,
-						(int) (rd.nextDouble() * 10000000) / 100000.0);
-			} while (neuron.isIntersectGraph(graph));
-			meanX += neuron.x;
-			meanY += neuron.y;
-			neurons[i] = neuron;
+		switch (type) {
+		// Create ring randomly
+		case "random": {
+			// Trung binh toa do x, y cua cac neuron
+			double meanX = 0, meanY = 0;
+			Neuron[] neurons = new Neuron[n];
+			for (int i = 0; i < n; i++) {
+				Neuron neuron;
+				do {
+					neuron = new Neuron((int) (rd.nextDouble() * 10000000) / 100000.0,
+							(int) (rd.nextDouble() * 10000000) / 100000.0);
+				} while (neuron.isIntersectGraph(graph));
+				meanX += neuron.x;
+				meanY += neuron.y;
+				neurons[i] = neuron;
+			}
+			meanX /= n;
+			meanY /= n;
+
+			// Tinh cac goc qua arctan
+			double[] angles = new double[n];
+			for (int i = 0; i < n; i++) {
+				angles[i] = Math.atan2(neurons[i].y - meanY, neurons[i].x - meanX);
+			}
+			double[] temp = angles.clone();
+			// Sap xep theo goc
+			Arrays.sort(angles);
+
+			int position = indexOf(temp, angles[0]);
+			Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
+			ring.rightInsert(neuron, null);
+
+			for (int i = 1; i < n; i++) {
+				position = indexOf(temp, angles[i]);
+				neuron = new Neuron(neurons[position].x, neurons[position].y);
+				ring.rightInsert(neuron, ring.neurons.get(i - 1));
+			}
+			break;
 		}
-		meanX /= n;
-		meanY /= n;
 
-		// Tinh cac goc qua arctan
-		double[] angles = new double[n];
-		for (int i = 0; i < n; i++) {
-			angles[i] = Math.atan2(neurons[i].y - meanY, neurons[i].x - meanX);
+		// Create ring around the center city
+		case "center":
+			Point center = new Point(50, 50);
+			double distance = visit.get(0).distanceFrom(center);
+			int index = 0;
+			for (int i = 1; i < visit.size(); i++) {
+				double temp = visit.get(i).distanceFrom(center);
+				if (temp < distance) {
+					distance = temp;
+					index = i;
+				}
+			}
+			center = visit.get(index);
+
+			// Trung binh toa do x, y cua cac neuron
+			Neuron[] neurons = new Neuron[n];
+			index = 0;
+			for (int j = 0; j < n; j++) {
+				Neuron neuron;
+				do {
+					double theta = Math.random() * 2 * Math.PI;
+					neuron = new Neuron(round(center.x + 2 * Math.cos(theta)), round(center.y + 2 * Math.sin(theta)));
+				} while (neuron.isIntersectGraph(graph));
+				neurons[index] = neuron;
+				index++;
+			}
+
+			// Tinh cac goc qua arctan
+			double[] angles = new double[n];
+			for (int i = 0; i < n; i++) {
+				angles[i] = Math.atan2(neurons[i].y - center.y, neurons[i].x - center.x);
+			}
+			double[] temp = angles.clone();
+			// Sap xep theo goc
+			Arrays.sort(angles);
+
+			int position = indexOf(temp, angles[0]);
+			Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
+			ring.rightInsert(neuron, null);
+
+			for (int i = 1; i < n; i++) {
+				position = indexOf(temp, angles[i]);
+				neuron = new Neuron(neurons[position].x, neurons[position].y);
+				ring.rightInsert(neuron, ring.neurons.get(i - 1));
+			}
+			break;
 		}
-		double[] temp = angles.clone();
-		// Sap xep theo goc
-		Arrays.sort(angles);
-
-		int position = indexOf(temp, angles[0]);
-		Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
-		ring.rightInsert(neuron, null);
-
-		for (int i = 1; i < n; i++) {
-			position = indexOf(temp, angles[i]);
-			neuron = new Neuron(neurons[position].x, neurons[position].y);
-			ring.rightInsert(neuron, ring.neurons.get(i - 1));
-		}
-
 	}
 
 	public void somAlgorithm() {
@@ -154,7 +206,7 @@ public class SOM {
 			if (error <= maxError)
 				break;
 			time = System.currentTimeMillis() - time;
-			System.out.println("Epoch " + epoch + ":\t" + time / 1000F + "s");
+			System.out.println("Epoch " + (epoch + 1) + ":\t" + time / 1000F + "s");
 		}
 	}
 

@@ -18,9 +18,9 @@ public class GUIRobotics {
 	private Frame mainFrame;
 	private Panel controlPanel;
 	public MyCanvas canvas;
-	private static int size = 500;
-	private static double range = 150;
-	private static int numOfRange = 10;
+	private static int size = 600;
+	private static double range = 110;
+	private static int numOfRange = 11;
 
 	public GUIRobotics(int size, double range, int numOfRange) {
 		GUIRobotics.size = size;
