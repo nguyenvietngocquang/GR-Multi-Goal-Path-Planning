@@ -8,11 +8,12 @@ import util.Neuron;
 import util.Point;
 
 public class GraphDivision {
-	public LinkedList<Point> midPoints = new LinkedList<Point>();
-	public LinkedList<Line> MAKLINK = new LinkedList<Line>();
-	public LinkedList<Line> lines = new LinkedList<Line>(); // Dung de luu tru cac doan da noi de lay trung diem
-	public LinkedList<Point> allPoints = new LinkedList<Point>();
 	public LinkedList<Point> visitPoints = new LinkedList<Point>();
+	public LinkedList<Point> midPoints = new LinkedList<Point>(); // Luu tru visit points + mid points
+	public LinkedList<Line> MAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua midPoints
+	public LinkedList<Line> allMAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua allPoints
+	public LinkedList<Line> lines = new LinkedList<Line>(); // Luu tru cac doan da noi de lay trung diem
+	public LinkedList<Point> allPoints = new LinkedList<Point>(); // Luu tru visit points + mid points + neurons
 
 	// return if m, n same side or not with line p1p2
 	public boolean SameSide(Point p1, Point p2, Point m, Point n) {
@@ -41,8 +42,8 @@ public class GraphDivision {
 		return SameSide(x, y, z, t) == false;
 	}
 
-	public GraphDivision(Graph myGraph, LinkedList<Point> points, LinkedList<Neuron> neurons) {
-		this.visitPoints = points;
+	public GraphDivision(Graph myGraph, LinkedList<Point> visitPoints) {
+		this.visitPoints = visitPoints;
 
 		for (int i = 0; i < myGraph.obstacleNumber; i++) {
 			for (int k = 0; k < myGraph.obstacles[i].cornerNumber; k++) {
@@ -150,22 +151,15 @@ public class GraphDivision {
 		}
 
 		// Add points to visit in MAKLINK
-		for (Point point : points) {
+		for (Point point : visitPoints) {
 			if (!point.isDuplicate(midPoints))
 				midPoints.add(point);
 		}
 
-		allPoints = (LinkedList<Point>) midPoints.clone();
-
-		// Add neurons in MAKLINK
-		for (Neuron neuron : neurons) {
-			allPoints.add(neuron);
-		}
-
 		// Create MAKLINK graph
-		for (int i = 0; i < allPoints.size() - 1; i++) {
-			for (int j = i + 1; j < allPoints.size(); j++) {
-				Line line = new Line(allPoints.get(i), allPoints.get(j));
+		for (int i = 0; i < midPoints.size() - 1; i++) {
+			for (int j = i + 1; j < midPoints.size(); j++) {
+				Line line = new Line(midPoints.get(i), midPoints.get(j));
 				if (line.countIntersectGraph(myGraph) == 0) {
 					int check = 1;
 
@@ -177,15 +171,8 @@ public class GraphDivision {
 						}
 					}
 
-					for (Point p : points) {
+					for (Point p : visitPoints) {
 						if (p.isOnSegment(line)) {
-							check = 0;
-							break;
-						}
-					}
-
-					for (Neuron n : neurons) {
-						if (n.isOnSegment(line)) {
 							check = 0;
 							break;
 						}
@@ -206,23 +193,20 @@ public class GraphDivision {
 		}
 	}
 
-	public void updateMaklink(Graph myGraph, Point newNeuron, LinkedList<Neuron> neurons) {
-		// Remove old neurons
-		for (int i = 0; i < MAKLINK.size(); i++) {
-			if (newNeuron.isEndPointOfLine(MAKLINK.get(i))) {
-				MAKLINK.remove(i);
-			}
-		}
+	public void updateMaklink(Graph myGraph, Neuron newNeuron) {
+		allMAKLINK = (LinkedList<Line>) MAKLINK.clone();
+		allPoints = (LinkedList<Point>) midPoints.clone();
+		allPoints.add(newNeuron);
 
 		// Update MAKLINK with new neurons
-		for (int i = 0; i < allPoints.size(); i++) {
-			if (!newNeuron.isEquals(allPoints.get(i))) {
-				Line line = new Line(newNeuron, allPoints.get(i));
-				if (!line.isInSet(MAKLINK) && line.countIntersectGraph(myGraph) == 0) {
+		for (int i = 0; i < midPoints.size(); i++) {
+			if (!newNeuron.isEquals(midPoints.get(i))) {
+				Line line = new Line(newNeuron, midPoints.get(i));
+				if (!line.isInSet(allMAKLINK) && line.countIntersectGraph(myGraph) == 0) {
 					int check = 1;
 
 					// check if intersect with existed lines
-					for (Line k : MAKLINK) {
+					for (Line k : allMAKLINK) {
 						if (line.isIntersectLineInMiddle(k)) {
 							check = 0;
 							break;
@@ -236,13 +220,6 @@ public class GraphDivision {
 						}
 					}
 
-					for (Neuron n : neurons) {
-						if (n.isOnSegment(line)) {
-							check = 0;
-							break;
-						}
-					}
-
 					for (Line l : lines) {
 						if (line.isIntersectLineInMiddle(l)) {
 							check = 0;
@@ -251,7 +228,51 @@ public class GraphDivision {
 					}
 
 					if (check == 1) {
-						MAKLINK.addLast(line);
+						allMAKLINK.addLast(line);
+					}
+				}
+			}
+		}
+	}
+
+	public void updateMaklink(Graph myGraph, LinkedList<Neuron> neurons) {
+		allMAKLINK = (LinkedList<Line>) MAKLINK.clone();
+		allPoints = (LinkedList<Point>) midPoints.clone();
+		allPoints.addAll(neurons);
+
+		// Update MAKLINK with new neurons
+		for (int i = 0; i < neurons.size(); i++) {
+			for (int j = 0; j < midPoints.size(); j++) {
+				if (!neurons.get(i).isEquals(midPoints.get(j))) {
+					Line line = new Line(neurons.get(i), midPoints.get(j));
+					if (!line.isInSet(allMAKLINK) && line.countIntersectGraph(myGraph) == 0) {
+						int check = 1;
+
+						// check if intersect with existed lines
+						for (Line k : allMAKLINK) {
+							if (line.isIntersectLineInMiddle(k)) {
+								check = 0;
+								break;
+							}
+						}
+
+						for (Point p : visitPoints) {
+							if (p.isOnSegment(line)) {
+								check = 0;
+								break;
+							}
+						}
+
+						for (Line l : lines) {
+							if (line.isIntersectLineInMiddle(l)) {
+								check = 0;
+								break;
+							}
+						}
+
+						if (check == 1) {
+							allMAKLINK.addLast(line);
+						}
 					}
 				}
 			}

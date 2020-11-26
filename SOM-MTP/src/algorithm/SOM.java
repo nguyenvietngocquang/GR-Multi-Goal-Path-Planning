@@ -27,7 +27,7 @@ public class SOM {
 	public double pathLength = 0;
 	int epochs;
 	double learningRate = 0.6;
-	final double maxError = 0.001; // Maximal allowable error
+	final double maxError = 0.1; // Maximal allowable error
 	int n; // Number of nodes
 	double G; // The gain parameter
 	int m; // Number of neighbors
@@ -38,7 +38,7 @@ public class SOM {
 		this.graph = graph;
 		this.visit = visit;
 		this.epochs = epochs;
-		this.n = (int) (visit.size() * 3);
+		this.n = (int) (visit.size() * 2.5);
 		this.G = 0.06 + 12.41 * n;
 		this.m = (int) (0.2 * n);
 
@@ -58,12 +58,14 @@ public class SOM {
 	public void createRingOfNeurons(String type) {
 		this.ring = new Ring();
 
+		Neuron[] neurons = new Neuron[n]; // Luu cac neurons
+		double[] angles = new double[n]; // Luu cac goc arctan
+
 		switch (type) {
 		// Create ring randomly
 		case "random": {
 			// Trung binh toa do x, y cua cac neuron
 			double meanX = 0, meanY = 0;
-			Neuron[] neurons = new Neuron[n];
 			for (int i = 0; i < n; i++) {
 				Neuron neuron;
 				do {
@@ -78,22 +80,8 @@ public class SOM {
 			meanY /= n;
 
 			// Tinh cac goc qua arctan
-			double[] angles = new double[n];
 			for (int i = 0; i < n; i++) {
 				angles[i] = Math.atan2(neurons[i].y - meanY, neurons[i].x - meanX);
-			}
-			double[] temp = angles.clone();
-			// Sap xep theo goc
-			Arrays.sort(angles);
-
-			int position = indexOf(temp, angles[0]);
-			Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
-			ring.rightInsert(neuron, null);
-
-			for (int i = 1; i < n; i++) {
-				position = indexOf(temp, angles[i]);
-				neuron = new Neuron(neurons[position].x, neurons[position].y);
-				ring.rightInsert(neuron, ring.neurons.get(i - 1));
 			}
 			break;
 		}
@@ -113,7 +101,6 @@ public class SOM {
 			center = visit.get(index);
 
 			// Trung binh toa do x, y cua cac neuron
-			Neuron[] neurons = new Neuron[n];
 			index = 0;
 			for (int j = 0; j < n; j++) {
 				Neuron neuron;
@@ -126,29 +113,29 @@ public class SOM {
 			}
 
 			// Tinh cac goc qua arctan
-			double[] angles = new double[n];
 			for (int i = 0; i < n; i++) {
 				angles[i] = Math.atan2(neurons[i].y - center.y, neurons[i].x - center.x);
 			}
-			double[] temp = angles.clone();
-			// Sap xep theo goc
-			Arrays.sort(angles);
-
-			int position = indexOf(temp, angles[0]);
-			Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
-			ring.rightInsert(neuron, null);
-
-			for (int i = 1; i < n; i++) {
-				position = indexOf(temp, angles[i]);
-				neuron = new Neuron(neurons[position].x, neurons[position].y);
-				ring.rightInsert(neuron, ring.neurons.get(i - 1));
-			}
 			break;
+		}
+
+		double[] temp = angles.clone();
+		// Sap xep theo goc
+		Arrays.sort(angles);
+
+		int position = indexOf(temp, angles[0]);
+		Neuron neuron = new Neuron(neurons[position].x, neurons[position].y);
+		ring.rightInsert(neuron, null);
+
+		for (int i = 1; i < n; i++) {
+			position = indexOf(temp, angles[i]);
+			neuron = new Neuron(neurons[position].x, neurons[position].y);
+			ring.rightInsert(neuron, ring.neurons.get(i - 1));
 		}
 	}
 
 	public void somAlgorithm() {
-		this.graphDivision = new GraphDivision(graph, visit, ring.neurons);
+		this.graphDivision = new GraphDivision(graph, visit);
 
 		for (int epoch = 0; epoch < epochs; epoch++) {
 			long time = System.currentTimeMillis();
@@ -185,8 +172,8 @@ public class SOM {
 				inhibited.add(winnerNeuron);
 
 				// Update the winner neuron weight
+				this.graphDivision.updateMaklink(graph, winnerNeuron);
 				error = Math.max(error, updateWeight(winnerNeuron, winnerNeuron, currentVisit, rate, epoch));
-				this.graphDivision.updateMaklink(graph, winnerNeuron, ring.neurons);
 
 				// Update the neighbor neuron weight
 				Neuron prevNeuron = winnerNeuron;
@@ -195,11 +182,11 @@ public class SOM {
 					prevNeuron = prevNeuron.prev;
 					nextNeuron = nextNeuron.next;
 
+					this.graphDivision.updateMaklink(graph, prevNeuron);
 					error = Math.max(error, updateWeight(winnerNeuron, prevNeuron, currentVisit, rate, epoch));
-					this.graphDivision.updateMaklink(graph, prevNeuron, ring.neurons);
 
+					this.graphDivision.updateMaklink(graph, nextNeuron);
 					error = Math.max(error, updateWeight(winnerNeuron, nextNeuron, currentVisit, rate, epoch));
-					this.graphDivision.updateMaklink(graph, nextNeuron, ring.neurons);
 				}
 			}
 
@@ -225,11 +212,12 @@ public class SOM {
 		FileWriter fw = new FileWriter(f);
 		fw.write("List of neurons:\n");
 
+		this.graphDivision.updateMaklink(graph, inhibited);
 		flag--;
 		for (int i = 0; i < flag; i++) {
 			Neuron neuron = ring.get(index[i]);
 			fw.write("(" + neuron.x + ", " + neuron.y + ")\n");
-			AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.MAKLINK, neuron,
+			AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.allMAKLINK, neuron,
 					ring.get(index[i + 1]));
 			pathLength += findPath.length;
 			for (int j = 0; j < findPath.path.size() - 1; j++) {
@@ -238,7 +226,8 @@ public class SOM {
 		}
 		Neuron neuron = ring.get(index[flag]);
 		fw.write("(" + neuron.x + ", " + neuron.y + ")\n");
-		AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.MAKLINK, neuron, ring.get(index[0]));
+		AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.allMAKLINK, neuron,
+				ring.get(index[0]));
 		pathLength += findPath.length;
 		for (int j = 0; j < findPath.path.size() - 1; j++) {
 			path.add(findPath.path.get(j));
@@ -266,7 +255,7 @@ public class SOM {
 
 	// Update the neuron weight
 	public double updateWeight(Neuron winnerNeuron, Neuron currentNeuron, Point visitPoint, double rate, int epoch) {
-		AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.MAKLINK, currentNeuron, visitPoint);
+		AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.allMAKLINK, currentNeuron, visitPoint);
 		// Distance to move
 		double move = rate * neighborhoodFunction(epoch, winnerNeuron, currentNeuron) * findPath.length;
 		double temp = move;
