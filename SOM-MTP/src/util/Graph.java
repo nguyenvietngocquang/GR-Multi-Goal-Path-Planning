@@ -61,7 +61,7 @@ public class Graph {
 		obtaclesFile.close();
 	}
 
-	public Obstacle[] addPoly(int n, Obstacle arr[], Obstacle x) {
+	public Obstacle[] addPolygon(int n, Obstacle arr[], Obstacle x) {
 		Obstacle[] temp = new Obstacle[n + 1];
 		for (int i = 0; i < n; i++)
 			temp[i] = arr[i];
@@ -88,7 +88,7 @@ public class Graph {
 				Obstacle obstacle = new Obstacle();
 				obstacle.cornerNumber = count_cor;
 				obstacle.points = points_temp;
-				obs = addPoly(count_obs, obs, obstacle);
+				obs = addPolygon(count_obs, obs, obstacle);
 				count_obs++;
 				count_cor = 0;
 			} else {

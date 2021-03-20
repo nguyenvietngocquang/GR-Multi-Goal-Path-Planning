@@ -1,8 +1,10 @@
 package util;
 
-import java.util.*;
+import java.util.Random;
+import java.util.Vector;
 
 public class Obstacle {
+
 	public int cornerNumber;
 	public Point[] points;
 

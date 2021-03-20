@@ -11,12 +11,12 @@ import util.Point;
 public class MakeWeightedGraph {
 	public double[][] neuronsToVisits;
 
-	public MakeWeightedGraph(Graph myGraph, LinkedList<Point> points, LinkedList<Point> midPoints,
+	public MakeWeightedGraph(Graph myGraph, LinkedList<Point> visitPoints, LinkedList<Point> midPoints,
 			LinkedList<Neuron> neurons, LinkedList<Line> lines) {
-		this.neuronsToVisits = new double[neurons.size()][points.size()];
+		this.neuronsToVisits = new double[neurons.size()][visitPoints.size()];
 		for (int i = 0; i < neurons.size(); i++) {
-			for (int j = 0; j < points.size(); j++) {
-				AStar findPath = new AStar(myGraph, midPoints, lines, neurons.get(i), points.get(j));
+			for (int j = 0; j < visitPoints.size(); j++) {
+				AStar findPath = new AStar(myGraph, midPoints, lines, neurons.get(i), visitPoints.get(j));
 				neuronsToVisits[i][j] = findPath.length;
 			}
 		}

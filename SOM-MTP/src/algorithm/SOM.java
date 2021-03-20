@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import graph.GraphDivision;
-import graph.MakeWeightedGraph;
 import util.Graph;
 import util.Neuron;
 import util.Point;
@@ -20,15 +19,14 @@ public class SOM {
 	public Ring ring;
 	public Graph graph;
 	public GraphDivision graphDivision;
-	public MakeWeightedGraph makeGraph;
-	public LinkedList<Point> visit = new LinkedList<Point>();
-	public LinkedList<Neuron> inhibited = new LinkedList<Neuron>();
-	public LinkedList<Point> path = new LinkedList<Point>();
+	public LinkedList<Point> visit;
+	public LinkedList<Neuron> inhibited = new LinkedList<Neuron>(); // Set of inhibited neurons
+	public LinkedList<Point> path = new LinkedList<Point>(); // Sequence of visit tour
 	public double pathLength = 0;
 	int epochs;
 	double learningRate = 0.6;
 	final double maxError = 0.1; // Maximal allowable error
-	int n; // Number of nodes
+	int n; // Number of neurons
 	double G; // The gain parameter
 	int m; // Number of neighbors
 
@@ -134,7 +132,7 @@ public class SOM {
 		}
 	}
 
-	public void somAlgorithm() {
+	public void somAlgorithm() throws IOException {
 		this.graphDivision = new GraphDivision(graph, visit);
 
 		for (int epoch = 0; epoch < epochs; epoch++) {

@@ -1,7 +1,9 @@
 package main;
 
 import java.awt.Color;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -32,7 +34,7 @@ public class Main {
 		System.out.println("Done!");
 	}
 
-	public static LinkedList<Point> readPointData(String filename) throws IOException {
+	public static LinkedList<Point> readPointData(String filename) throws FileNotFoundException {
 		Scanner scan = new Scanner(new File(filename));
 		LinkedList<Point> pointsToVisit = new LinkedList<Point>();
 		double x = scan.nextDouble();

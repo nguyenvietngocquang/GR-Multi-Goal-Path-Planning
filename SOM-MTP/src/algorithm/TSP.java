@@ -12,13 +12,13 @@ import util.Ring;
 public class TSP {
 
 	public Ring ring;
-	public LinkedList<Point> visit = new LinkedList<Point>();
+	public LinkedList<Point> visit;
 	public LinkedList<Neuron> inhibited = new LinkedList<Neuron>();
 	public LinkedList<Point> path = new LinkedList<Point>();
 	public double pathLength = 0;
 	int epochs;
 	double learningRate = 0.6;
-	final double maxError = 0.001; // Maximal allowable error
+	final double maxError = 0.1; // Maximal allowable error
 	int n; // Number of nodes
 	double G; // The gain parameter
 	int m; // Number of neighbors
@@ -28,7 +28,7 @@ public class TSP {
 	public TSP(LinkedList<Point> visit, int epochs) {
 		this.visit = visit;
 		this.epochs = epochs;
-		this.n = (int) (visit.size() * 3);
+		this.n = (int) (visit.size() * 2.5);
 		this.G = 0.06 + 12.41 * n;
 		this.m = (int) (0.2 * n);
 
@@ -112,11 +112,11 @@ public class TSP {
 						}
 					}
 				}
-				inhibited.add(ring.get(position));
+				Neuron winnerNeuron = ring.get(position);
+				inhibited.add(winnerNeuron);
 
 				// Update the winner neuron weight
-				error = Math.max(error,
-						updateWeight(ring.get(position), ring.get(position), currentVisit, rate, epoch));
+				error = Math.max(error, updateWeight(winnerNeuron, winnerNeuron, currentVisit, rate, epoch));
 
 				// Update the neighbor neuron weight
 				Neuron prevNeuron = ring.get(position);
@@ -124,8 +124,8 @@ public class TSP {
 				for (int j = 0; j < m; j++) {
 					prevNeuron = prevNeuron.prev;
 					nextNeuron = nextNeuron.next;
-					error = Math.max(error, updateWeight(ring.get(position), prevNeuron, currentVisit, rate, epoch));
-					error = Math.max(error, updateWeight(ring.get(position), nextNeuron, currentVisit, rate, epoch));
+					error = Math.max(error, updateWeight(winnerNeuron, prevNeuron, currentVisit, rate, epoch));
+					error = Math.max(error, updateWeight(winnerNeuron, nextNeuron, currentVisit, rate, epoch));
 				}
 			}
 

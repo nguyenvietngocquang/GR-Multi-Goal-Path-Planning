@@ -1,6 +1,10 @@
 package graph;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import util.Graph;
 import util.Line;
@@ -8,14 +12,14 @@ import util.Neuron;
 import util.Point;
 
 public class GraphDivision {
-	public LinkedList<Point> visitPoints = new LinkedList<Point>();
+	public LinkedList<Point> visitPoints; // Danh sach cac diem can tham quan
+	public LinkedList<Line> lines = new LinkedList<Line>(); // Luu tru cac doan da noi de lay trung diem
 	public LinkedList<Point> midPoints = new LinkedList<Point>(); // Luu tru visit points + mid points
 	public LinkedList<Line> MAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua midPoints
-	public LinkedList<Line> allMAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua allPoints
-	public LinkedList<Line> lines = new LinkedList<Line>(); // Luu tru cac doan da noi de lay trung diem
 	public LinkedList<Point> allPoints = new LinkedList<Point>(); // Luu tru visit points + mid points + neurons
+	public LinkedList<Line> allMAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua allPoints
 
-	// return if m, n same side or not with line p1p2
+	// Return if m, n same side or not with line p1p2
 	public boolean SameSide(Point p1, Point p2, Point m, Point n) {
 		double a = p1.y - p2.y;
 		double b = p2.x - p1.x;
@@ -42,7 +46,7 @@ public class GraphDivision {
 		return SameSide(x, y, z, t) == false;
 	}
 
-	public GraphDivision(Graph myGraph, LinkedList<Point> visitPoints) {
+	public GraphDivision(Graph myGraph, LinkedList<Point> visitPoints) throws IOException {
 		this.visitPoints = visitPoints;
 
 		for (int i = 0; i < myGraph.obstacleNumber; i++) {
@@ -152,9 +156,13 @@ public class GraphDivision {
 
 		// Add points to visit in MAKLINK
 		for (Point point : visitPoints) {
-			if (!point.isDuplicate(midPoints))
+			if (!point.isInSet(midPoints))
 				midPoints.add(point);
 		}
+
+		File f = new File("maklink.txt");
+		FileWriter fw = new FileWriter(f);
+		fw.write("Lines:\n");
 
 		// Create MAKLINK graph
 		for (int i = 0; i < midPoints.size() - 1; i++) {
@@ -187,10 +195,15 @@ public class GraphDivision {
 
 					if (check == 1) {
 						MAKLINK.addLast(line);
+						fw.write("(" + line.firstPoint.x + ", " + line.firstPoint.y + ") (" + line.secondPoint.x + ", "
+								+ line.secondPoint.y + ")\n");
 					}
 				}
 			}
 		}
+
+		fw.write("-1");
+		fw.close();
 	}
 
 	public void updateMaklink(Graph myGraph, Neuron newNeuron) {
