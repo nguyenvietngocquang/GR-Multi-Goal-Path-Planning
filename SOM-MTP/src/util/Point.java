@@ -5,7 +5,7 @@ import java.util.LinkedList;
 public class Point {
 	public double x;
 	public double y;
-	public double distance;
+	public double distance = 0;
 
 	public Point(double x, double y) {
 		this.x = x;
@@ -24,15 +24,7 @@ public class Point {
 		return Math.hypot(point.x - this.x, point.y - this.y);
 	}
 
-	// Return if angle b.this.c is greater than 180 or not
-	public boolean greaterThan180(Point b, Point c, Obstacle obstacle) {
-		Point point1 = new Point((this.x + b.x) / 2, (this.y + b.y) / 2);
-		Point point2 = new Point((this.x + c.x) / 2, (this.y + c.y) / 2);
-		Line line = new Line(point1, point2);
-		return (line.countIntersectObstacle(obstacle) == 2);
-	}
-
-	public boolean isDuplicate(LinkedList<Point> points) {
+	public boolean isInSet(LinkedList<Point> points) {
 		for (int i = 0; i < points.size(); i++) {
 			if (points.get(i).x == this.x && points.get(i).y == this.y)
 				return true;
@@ -120,6 +112,14 @@ public class Point {
 		if (this.isEquals(line.firstPoint) || this.isEquals(line.secondPoint))
 			return true;
 		return false;
+	}
+
+	// Return if angle b.this point.c is greater than 180 or not
+	public boolean greaterThan180(Point b, Point c, Obstacle obstacle) {
+		Point point1 = new Point((this.x + b.x) / 2, (this.y + b.y) / 2);
+		Point point2 = new Point((this.x + c.x) / 2, (this.y + c.y) / 2);
+		Line line = new Line(point1, point2);
+		return (line.countIntersectObstacle(obstacle) == 2);
 	}
 
 }

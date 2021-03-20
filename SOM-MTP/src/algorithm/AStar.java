@@ -35,7 +35,7 @@ public class AStar {
 
 	public AStar(Graph myGraph, LinkedList<Point> points, LinkedList<Line> lines, Point start, Point end) {
 		double[][] graph = GraphArray(points, lines);
-		double[] distance = new double[points.size()]; // Shortest Distance from start
+		double[] distance = new double[points.size()]; // Shortest distance from start
 		for (int i = 0; i < points.size(); i++) {
 			if (i != start.indexInSet(points))
 				distance[i] = -1;
@@ -43,9 +43,9 @@ public class AStar {
 				distance[i] = 0;
 		}
 		int n = points.size();
-		double[] h_value = new double[points.size()]; // heuristic value
+		double[] h_value = new double[points.size()]; // Heuristic value
 		int[] visited = new int[points.size()];
-		Point[] prev = new Point[points.size()]; // previous point
+		Point[] prev = new Point[points.size()]; // Previous point
 		LinkedList<Point> open = new LinkedList<Point>();
 
 		for (int i = 0; i < n; i++) {

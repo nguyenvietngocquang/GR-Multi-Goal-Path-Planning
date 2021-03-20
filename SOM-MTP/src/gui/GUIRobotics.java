@@ -54,8 +54,8 @@ public class GUIRobotics {
 
 		controlPanel.add(canvas);
 
-		// draw obstacles
-		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObtacles(obtacles_file);
+		// Draw obstacles
+		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles(obtacles_file);
 
 		for (ObstaclesGraph obstacle : obstacles) {
 			for (int i = 0; i < obstacle.points.size() - 1; i++) {
@@ -109,7 +109,7 @@ public class GUIRobotics {
 			g2.setColor(Color.BLUE);
 			g2.fill(new Ellipse2D.Double(OX + p.x * alpha - 3, OY - p.y * alpha - 3, 6, 6));
 		}
-		
+
 		public void drawPoint(Point p, Color color) {
 			Graphics2D g2 = (Graphics2D) getGraphics();
 			g2.setColor(color);
@@ -155,7 +155,7 @@ public class GUIRobotics {
 			}
 		}
 
-		public void drawLinesWithMiddle(Point pt1, Point pt2) {
+		public void drawLineWithMiddle(Point pt1, Point pt2) {
 			Graphics2D g2 = (Graphics2D) getGraphics();
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(Color.BLUE);
@@ -166,7 +166,7 @@ public class GUIRobotics {
 			g2.fill(new Ellipse2D.Double(OX + pt.x * alpha - 3, OY - pt.y * alpha - 3, 6, 6));
 		}
 
-		public void drawLinesWithoutMiddle(Point pt1, Point pt2) {
+		public void drawLineWithoutMiddle(Point pt1, Point pt2) {
 			Graphics2D g2 = (Graphics2D) getGraphics();
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(Color.BLUE);
@@ -174,9 +174,9 @@ public class GUIRobotics {
 		}
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+	public static void main(String[] args) throws FileNotFoundException {
 
-		GUIRobotics gui = new GUIRobotics(500, 110, 11);
+		GUIRobotics gui = new GUIRobotics(600, 110, 11);
 		gui.generateEnvironment("obstacles.txt");
 
 		System.setIn(new FileInputStream("maklink.txt"));
@@ -195,7 +195,7 @@ public class GUIRobotics {
 			}
 
 			for (int i = 0; i < points.size() / 2; i++) {
-				gui.canvas.drawLinesWithMiddle(points.get(2 * i), points.get(2 * i + 1));
+				gui.canvas.drawLineWithoutMiddle(points.get(2 * i), points.get(2 * i + 1));
 			}
 
 			string = sc.nextLine();

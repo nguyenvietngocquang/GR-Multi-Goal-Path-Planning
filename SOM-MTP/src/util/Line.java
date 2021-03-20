@@ -28,8 +28,10 @@ public class Line {
 		double c = subFloat(multiFloat(-a, firstPoint.x), multiFloat(b, firstPoint.y));
 		// c = -a * firstPoint.x - b * firstPoint.y
 
-		double aLine = subFloat(line.firstPoint.y, line.secondPoint.y); // aLine = line.firstPoint.y - line.secondPoint.y
-		double bLine = subFloat(line.secondPoint.x, line.firstPoint.x); // bLine = line.secondPoint.x - line.firstPoint.x
+		double aLine = subFloat(line.firstPoint.y, line.secondPoint.y); // aLine = line.firstPoint.y -
+																		// line.secondPoint.y
+		double bLine = subFloat(line.secondPoint.x, line.firstPoint.x); // bLine = line.secondPoint.x -
+																		// line.firstPoint.x
 		double cLine = subFloat(multiFloat(-aLine, line.firstPoint.x), multiFloat(bLine, line.firstPoint.y));
 		// cLine = -aLine * line.firstPoint.x - bLine * line.firstPoint.y
 
@@ -46,8 +48,10 @@ public class Line {
 			return true;
 		}
 
-		// ((a * line.firstPoint.x + b * line.firstPoint.y + c) * (a * line.secondPoint.x + b * line.secondPoint.y + c) < 0) &&
-		// ((aLine * firstPoint.x + bLine * firstPoint.y + cLine) * (aLine * secondPoint.x + bLine * secondPoint.y + cLine) < 0)
+		// ((a * line.firstPoint.x + b * line.firstPoint.y + c) * (a *
+		// line.secondPoint.x + b * line.secondPoint.y + c) < 0) &&
+		// ((aLine * firstPoint.x + bLine * firstPoint.y + cLine) * (aLine *
+		// secondPoint.x + bLine * secondPoint.y + cLine) < 0)
 		if ((multiFloat(addFloat(multiFloat(a, line.firstPoint.x), multiFloat(b, line.firstPoint.y), c),
 				addFloat(multiFloat(a, line.secondPoint.x), multiFloat(b, line.secondPoint.y), c)) < 0)
 				&& (multiFloat(addFloat(multiFloat(aLine, firstPoint.x), multiFloat(bLine, firstPoint.y), cLine),
@@ -134,9 +138,6 @@ public class Line {
 	}
 
 	public boolean isIntersectObstacle(Obstacle obstacle) {
-//		if ((firstPoint.isIntersectObstacle(obstacle)) || (secondPoint.isIntersectObstacle(obstacle))) {
-//			return true;
-//		}
 		int i = 0;
 		do {
 			int next = (i + 1) % obstacle.cornerNumber;
@@ -177,14 +178,17 @@ public class Line {
 		return result;
 	}
 
+	// Addition of real numbers function
 	public double addFloat(double a, double b, double c) {
 		return BigDecimal.valueOf(a).add(BigDecimal.valueOf(b).add(BigDecimal.valueOf(c))).doubleValue();
 	}
 
+	// Subtraction of real numbers function
 	public double subFloat(double a, double b) {
 		return BigDecimal.valueOf(a).subtract(BigDecimal.valueOf(b)).doubleValue();
 	}
 
+	// Multiplication of real numbers function
 	public double multiFloat(double a, double b) {
 		return BigDecimal.valueOf(a).multiply(BigDecimal.valueOf(b)).doubleValue();
 	}
