@@ -30,16 +30,14 @@ public class PSO {
 	Random random = new Random();
 	public Path NaParticles[] = new Path[Nmax];
 	public Path NbParticles[] = new Path[Nmax];
-	public static double r1, r2;
 	public static double r, pm;
-	public static final double c1 = 0.1, c2 = 0.1;
-	public static double w;
 	public double AB;
-	public static final double wMax = 0.9, wMin = 0.2;
+	public double lr1, lr2;
 	static NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
 	static DecimalFormat df = (DecimalFormat) nf;
 	public LinkedList<Point> result = new LinkedList<Point>();
 	public double length;
+	public double strategy[][]; // strategy parameters
 
 	public PSO(int numR, Point start, Point end, Graph graph) {
 		startPoint = start;
@@ -50,75 +48,9 @@ public class PSO {
 		this.R = AB / numR;
 	}
 
-//	public double calculateAngle(Point b, Point a, Point c) { // calculate angle BAC
-//		// vectors
-//		Point v1 = new Point(b.x - a.x, b.y - a.y);
-//		Point v2 = new Point(c.x - a.x, c.y - a.y);
-//		double cos = (v1.x * v2.x + v1.y * v2.y) / (Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y));
-//		return Math.toDegrees(Math.acos(cos));
-//	}
-
-//	public double determinePathAngle() {
-//		LinkedList<Obstacle> collide = new LinkedList<Obstacle>();
-//		LinkedList<Point> up = new LinkedList<Point>();
-//		LinkedList<Point> down = new LinkedList<Point>();
-//		double a = startPoint.y - endPoint.y;
-//		double b = endPoint.x - startPoint.x;
-//		double c = -a * startPoint.x - b * startPoint.y;
-//
-//		for (int i = 0; i != graph.obstacleNumber; i++) {
-//			Obstacle obstacle = graph.obstacles[i];
-//			Line line = new Line(startPoint, endPoint);
-//			if (line.isIntersectObstacle(obstacle)) {
-//				collide.add(obstacle);
-//			}
-//		}
-//
-//		for (Obstacle obstacle : collide) {
-//			for (Point p : obstacle.points) {
-//				if (a * p.x + b * p.y + c >= 0) {
-//					up.add(p);
-//				} else if (a * p.x + b * p.y + c < 0) {
-//					down.add(p);
-//				}
-//			}
-//		}
-//
-//		double maxUp = 0, maxDown = 0;
-//		double disUp = 0, disDown = 0;
-//		for (Point p : up) {
-//			if (p.distanceFrom(startPoint) > disUp) {
-//				disUp = p.distanceFrom(startPoint);
-//			}
-//			double angle = calculateAngle(p, startPoint, endPoint);
-//			if (angle > maxUp) {
-//				maxUp = angle;
-//			}
-//		}
-//		for (Point p : down) {
-//			if (p.distanceFrom(startPoint) > disDown) {
-//				disDown = p.distanceFrom(startPoint);
-//			}
-//			double angle = calculateAngle(p, startPoint, endPoint);
-//			if (angle > maxDown) {
-//				maxDown = angle;
-//			}
-//		}
-//
-//		if (maxUp * disUp < maxDown * disDown) {
-//			if (disUp > this.numR * R) {
-//				this.numR = (int) (disUp / R) + 1;
-//			}
-//			return maxUp;
-//		} else {
-//			if (disDown > this.numR * R) {
-//				this.numR = (int) (disDown / R) + 1;
-//			}
-//			return maxDown;
-//		}
-//	}
-
 	public void initialize(int numR) {
+		strategy = new double[NP][numR];
+
 		for (int i = 0; i < NP; i++) {
 			double pointy[] = new double[numR];
 			Point points[] = new Point[numR];
@@ -127,13 +59,271 @@ public class PSO {
 					pointy[j] = random.nextDouble() * (maxPointy - minPointy) + minPointy;
 					points[j] = Path.convertPointToPoint(pointy[j], (j + 1) * R, startPoint, endPoint);
 				} while (!points[j].inCoordinate());
+
+				strategy[i][j] = random.nextDouble();
 			}
 			particles[i] = new Path(numR, R, pointy, points);
 			particles[i].distance();
 		}
 	}
 
+	public void initializeNaNb() {
+		for (int i = 0; i < Nmax; i++) {
+			NaParticles[i] = new Path(numR);
+			NbParticles[i] = new Path(numR);
+		}
+		for (int i = 0; i < NP; i++) {
+			if (pathCollision(particles[i]) == false) {
+				addArchive(particles[i], NaParticles);
+			} else if (pathCollision(particles[i]) == true) {
+				addArchive(particles[i], NbParticles);
+			}
+		}
+	}
+
+	public void gBestSelection(int it) {
+		double[] CD = new double[Nmax];
+		double bestCD;
+		int bestCDid;
+		boolean NaNull = true, NbNull = true;
+		for (int i = 0; i < NaParticles.length; i++) {
+			if (NaParticles[i].points[0] != null) {
+				NaNull = false;
+				break;
+			}
+		}
+		for (int i = 0; i < NbParticles.length; i++) {
+			if (NbParticles[i].points[0] != null) {
+				NbNull = false;
+				break;
+			}
+		}
+
+		// select the best CD particle as Gbest
+		if (NaNull == true) {
+			CD = crowdingDistance(NbParticles);
+			bestCD = CD[0];
+			bestCDid = 0;
+			for (int i = 0; i < Nmax; i++) {
+				if (CD[i] > bestCD && CD[i] > 0) {
+					bestCD = CD[i];
+					bestCDid = i;
+				}
+			}
+			for (int i = 0; i < numR; i++) {
+				gBest.pointy[i] = NbParticles[bestCDid].pointy[i];
+				gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
+			}
+			gBest.distance = NbParticles[bestCDid].distance;
+		} else if (NbNull == true) {
+			CD = crowdingDistance(NaParticles);
+			bestCD = CD[0];
+			bestCDid = 0;
+			for (int i = 0; i < Nmax; i++) {
+				if (CD[i] > bestCD && CD[i] > 0) {
+					bestCD = CD[i];
+					bestCDid = i;
+				}
+			}
+			for (int i = 0; i < numR; i++) {
+				gBest.pointy[i] = NaParticles[bestCDid].pointy[i];
+				gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
+			}
+			gBest.distance = NaParticles[bestCDid].distance;
+		} else {
+			double ps = 0.5 - 0.5 * it / IT;
+			double r = random.nextDouble();
+			if (ps < r) {
+				CD = crowdingDistance(NaParticles);
+				bestCD = CD[0];
+				bestCDid = 0;
+				for (int i = 0; i < Nmax; i++) {
+					if (CD[i] > bestCD && CD[i] > 0) {
+						bestCD = CD[i];
+						bestCDid = i;
+					}
+				}
+				for (int i = 0; i < numR; i++) {
+					gBest.pointy[i] = NaParticles[bestCDid].pointy[i];
+					gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
+				}
+				gBest.distance = NaParticles[bestCDid].distance;
+			} else {
+				CD = crowdingDistance(NbParticles);
+				bestCD = CD[0];
+				bestCDid = 0;
+				for (int i = 0; i < Nmax; i++) {
+					if (CD[i] > bestCD && CD[i] > 0) {
+						bestCD = CD[i];
+						bestCDid = i;
+					}
+				}
+				for (int i = 0; i < numR; i++) {
+					gBest.pointy[i] = NbParticles[bestCDid].pointy[i];
+					gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
+				}
+				gBest.distance = NbParticles[bestCDid].distance;
+			}
+		}
+	}
+
+	public void getVelocity() {
+		vValue = new double[NP][numR];
+		for (int i = 0; i < NP; i++) {
+			for (int j = 0; j < numR; j++) {
+				vValue[i][j] = random.nextDouble() * (V_MAX - V_MIN + 1) + V_MIN;
+			}
+		}
+		return;
+	}
+
+	public Path mutation(Path path, int index) {
+		int x1 = random.nextInt(Nmax);
+		int x2 = random.nextInt(Nmax);
+		for (int j = 0; j < numR; j++) {
+			// Discrete crossover
+			double u = random.nextDouble();
+			if (u <= 0.5) {
+				path.pointy[j] = NaParticles[x1].pointy[j];
+			} else {
+				path.pointy[j] = NaParticles[x2].pointy[j];
+			}
+			if (path.pointy[j] > maxPointy) {
+				path.pointy[j] = maxPointy;
+			} else if (path.pointy[j] < minPointy) {
+				path.pointy[j] = minPointy;
+			}
+			path.points[j] = Path.convertPointToPoint(path.pointy[j], (j + 1) * R, startPoint, endPoint);
+
+			// Intermediate crossover
+			strategy[index][j] = (strategy[x1][j] + strategy[x2][j]) / 2;
+		}
+		path.distance();
+		return path;
+	}
+
 	// multi-objective
+	// Tra lai rank cua cac phan tu
+	public int[] particleRank(Path[] particles, int type) {
+		int len = particles.length;
+		int[] rank = new int[len];
+		double[] obj = new double[len];
+		int count;
+		// Sap xep cac particle theo tieu chi
+		if (type == 1) {
+			for (int i = 0; i < len; i++) {
+				if (particles[i].points[0] != null) {
+					obj[i] = particles[i].distance;
+				} else {
+					obj[i] = Double.POSITIVE_INFINITY;
+				}
+			}
+		} else if (type == 2) {
+			for (int i = 0; i < len; i++) {
+				if (particles[i].points[0] != null) {
+					obj[i] = particles[i].pathSafety(graph);
+				} else {
+					obj[i] = Double.POSITIVE_INFINITY;
+				}
+			}
+		} else if (type == 3) {
+			for (int i = 0; i < len; i++) {
+				if (particles[i].points[0] != null) {
+					obj[i] = particles[i].pathSmooth();
+				} else {
+					obj[i] = Double.POSITIVE_INFINITY;
+				}
+			}
+		}
+
+		for (int i = 0; i < len; i++) {
+			count = 0;
+			for (int j = 0; j < len; j++) {
+				if (j != i && obj[j] >= obj[i]) {
+					count++; // Dem so luong particle te hon obj[i]
+				}
+
+			}
+			rank[i] = len - count - 1;
+			for (int k = 0; k < i; k++) {
+				if (rank[k] == rank[i]) {
+					rank[i] += 1;
+				}
+			}
+		}
+		return rank;
+	}
+
+	// Tra lai tap cac index tu cao den thap
+	public int[] indexRank(int[] rank) {
+		int length = rank.length;
+		int index[] = new int[length];
+		for (int i = 0; i < length; i++) {
+			index[rank[i]] = i;
+		}
+		return index;
+	}
+
+	public double[] crowdingDistance(Path[] particles) {
+		int len = particles.length;
+		double[] CD = new double[len];
+		double[] dis = new double[len];
+		double[] safety = new double[len];
+		double[] smooth = new double[len];
+		int[] rankDistance = new int[len];
+		int[] rankSafety = new int[len];
+		int[] rankSmooth = new int[len];
+		int[] rerankDistance = new int[len];
+		int[] rerankSafety = new int[len];
+		int[] rerankSmooth = new int[len];
+		rankDistance = particleRank(particles, 1);
+		rankSafety = particleRank(particles, 2);
+		rankSmooth = particleRank(particles, 3);
+		rerankDistance = indexRank(rankDistance);
+		rerankSafety = indexRank(rankSafety);
+		rerankSmooth = indexRank(rankSmooth);
+		for (int i = 0; i < len; i++) {
+			CD[i] = 0;
+			if (particles[i].points[0] != null) {
+				dis[i] = particles[i].distance;
+				safety[i] = particles[i].pathSafety(graph);
+				smooth[i] = particles[i].pathSmooth();
+			}
+		}
+		int index = 0; // Tinh so phan tu null
+		for (int i = 0; i < len; i++) {
+			if (particles[i].points[0] == null) {
+				index++;
+			}
+		}
+
+		for (int i = 0; i < len; i++) {
+			if (rankDistance[i] == 0 || rankDistance[i] == (len - 1 - index)) {
+				CD[i] += Double.POSITIVE_INFINITY;
+			}
+			if (rankSafety[i] == 0 || rankSafety[i] == (len - 1 - index)) {
+				CD[i] += Double.POSITIVE_INFINITY;
+			}
+			if (rankSmooth[i] == 0 || rankSmooth[i] == (len - 1 - index)) {
+				CD[i] += Double.POSITIVE_INFINITY;
+			}
+
+			if (particles[i].points[0] == null) {
+				CD[i] = 0;
+			} else if (rankDistance[i] != 0 && rankDistance[i] != (len - 1 - index) && rankSmooth[i] != 0
+					&& rankSmooth[i] != (len - 1 - index) && rankSafety[i] != 0 && rankSafety[i] != (len - 1 - index)) {
+				CD[i] = CD[i] + (dis[rerankDistance[rankDistance[i] + 1]] - dis[rerankDistance[rankDistance[i] - 1]])
+						/ (dis[rerankDistance[len - 1 - index]] - dis[rerankDistance[0]]);
+				CD[i] = CD[i] + (safety[rerankSafety[rankSafety[i] + 1]] - safety[rerankSafety[rankSafety[i] - 1]])
+						/ (safety[rerankSafety[len - 1 - index]] - safety[rerankSafety[0]]);
+				CD[i] = CD[i] + (smooth[rerankSmooth[rankSmooth[i] + 1]] - smooth[rerankSmooth[rankSmooth[i] - 1]])
+						/ (smooth[rerankSmooth[len - 1 - index]] - smooth[rerankSmooth[0]]);
+			}
+		}
+		return CD;
+	}
+	// end multi-objective
+
 	public boolean compare(Path particle1, Path particle2) {
 		if (particle1.points[0] == null)
 			return false;
@@ -164,130 +354,6 @@ public class PSO {
 			return false;
 	}
 
-	// Tra lai rank cua cac phan tu
-	public int[] particleRank(Path[] particles, int type) {
-		int len = particles.length;
-		int[] rank = new int[len];
-		double[] obj = new double[len];
-		int count;
-		// Sap xep cac particle theo tieu chi
-		if (type == 1) {
-			for (int i = 0; i != len; i++) {
-				if (particles[i].points[0] != null) {
-					obj[i] = particles[i].distance;
-				} else {
-					obj[i] = Double.POSITIVE_INFINITY;
-				}
-			}
-		} else if (type == 2) {
-			for (int i = 0; i != len; i++) {
-				if (particles[i].points[0] != null) {
-					obj[i] = particles[i].pathSafety(graph);
-				} else {
-					obj[i] = Double.POSITIVE_INFINITY;
-				}
-			}
-		} else if (type == 3) {
-			for (int i = 0; i != len; i++) {
-				if (particles[i].points[0] != null) {
-					obj[i] = particles[i].pathSmooth();
-				} else {
-					obj[i] = Double.POSITIVE_INFINITY;
-				}
-			}
-		}
-
-		for (int i = 0; i != len; i++) {
-			count = 0;
-			for (int j = 0; j != len; j++) {
-				if (j != i && obj[j] >= obj[i]) {
-					count++; // Dem so luong particle te hon obj[i]
-				}
-
-			}
-			rank[i] = len - count - 1;
-			for (int k = 0; k != i; k++) {
-				if (rank[k] == rank[i]) {
-					rank[i] += 1;
-				}
-			}
-		}
-		return rank;
-	}
-
-	public double[] crowdingDistance(Path[] particles) {
-		int len = particles.length;
-		double[] CD = new double[len];
-		double[] dis = new double[len];
-		double[] safety = new double[len];
-		double[] smooth = new double[len];
-		int[] rankDistance = new int[len];
-		int[] rankSafety = new int[len];
-		int[] rankSmooth = new int[len];
-		int[] rerankDistance = new int[len];
-		int[] rerankSafety = new int[len];
-		int[] rerankSmooth = new int[len];
-		rankDistance = particleRank(particles, 1);
-		rankSafety = particleRank(particles, 2);
-		rankSmooth = particleRank(particles, 3);
-		rerankDistance = indexRank(rankDistance);
-		rerankSafety = indexRank(rankSafety);
-		rerankSmooth = indexRank(rankSmooth);
-		for (int i = 0; i != len; i++) {
-			CD[i] = 0;
-			if (particles[i].points[0] != null) {
-				dis[i] = particles[i].distance;
-				safety[i] = particles[i].pathSafety(graph);
-				smooth[i] = particles[i].pathSmooth();
-			}
-		}
-		int index = 0; // Tinh so phan tu null
-		for (int i = 0; i != len; i++) {
-			if (particles[i].points[0] == null) {
-				index++;
-			}
-		}
-
-		for (int i = 0; i != len; i++) {
-			if (rankDistance[i] == 0 || rankDistance[i] == (len - 1 - index)) {
-				CD[i] += Double.POSITIVE_INFINITY;
-			}
-			if (rankSafety[i] == 0 || rankSafety[i] == (len - 1 - index)) {
-				CD[i] += Double.POSITIVE_INFINITY;
-			}
-			if (rankSmooth[i] == 0 || rankSmooth[i] == (len - 1 - index)) {
-				CD[i] += Double.POSITIVE_INFINITY;
-			}
-
-			if (particles[i].points[0] == null) {
-				CD[i] = 0;
-			} else if (rankDistance[i] != 0 && rankDistance[i] != (len - 1 - index) && rankSmooth[i] != 0
-					&& rankSmooth[i] != (len - 1 - index) && rankSafety[i] != 0 && rankSafety[i] != (len - 1 - index)) {
-				CD[i] = CD[i] + (dis[rerankDistance[rankDistance[i] + 1]] - dis[rerankDistance[rankDistance[i] - 1]])
-						/ (dis[rerankDistance[len - 1 - index]] - dis[rerankDistance[0]]);
-				CD[i] = CD[i] + (safety[rerankSafety[rankSafety[i] + 1]] - safety[rerankSafety[rankSafety[i] - 1]])
-						/ (safety[rerankSafety[len - 1 - index]] - safety[rerankSafety[0]]);
-				CD[i] = CD[i] + (smooth[rerankSmooth[rankSmooth[i] + 1]] - smooth[rerankSmooth[rankSmooth[i] - 1]])
-						/ (smooth[rerankSmooth[len - 1 - index]] - smooth[rerankSmooth[0]]);
-			}
-		}
-		return CD;
-	}
-
-	public void initializeNaNb() {
-		for (int i = 0; i != Nmax; i++) {
-			NaParticles[i] = new Path(numR);
-			NbParticles[i] = new Path(numR);
-		}
-		for (int i = 0; i != NP; i++) {
-			if (pathCollision(particles[i]) == false) {
-				addArchive(particles[i], NaParticles);
-			} else if (pathCollision(particles[i]) == true) {
-				addArchive(particles[i], NbParticles);
-			}
-		}
-	}
-
 	public void addArchive(Path par, Path[] NaParticles) {
 		boolean dominate = false, dominated = false;
 		int breakPoint = 100;
@@ -296,7 +362,7 @@ public class PSO {
 		double worstCD;
 		int worstCDid;
 		boolean checkNull = true; // if NaParticles null
-		for (int i = 0; i != NaParticles.length; i++) {
+		for (int i = 0; i < NaParticles.length; i++) {
 			if (NaParticles[i].points[0] != null) {
 				checkNull = false;
 				break;
@@ -304,14 +370,14 @@ public class PSO {
 		}
 
 		if (checkNull == true) { // if Na null, add to archive
-			for (int i = 0; i != numR; i++) {
+			for (int i = 0; i < numR; i++) {
 				NaParticles[0].pointy[i] = par.pointy[i];
 				NaParticles[0].points[i] = new Point(par.points[i].x, par.points[i].y);
 			}
 			NaParticles[0].distance = par.distance;
 		} else {
 			int replace = 0;
-			for (int i = 0; i != Nmax; i++) {
+			for (int i = 0; i < Nmax; i++) {
 				if (NaParticles[i].points[0] == null) {
 					breakPoint = i;
 				} else if (checkDominate(NaParticles[i], par) == true) {
@@ -327,7 +393,7 @@ public class PSO {
 			// Neu khong bi dominated thi them vao
 			if (!dominated) {
 				if (dominate) { // Neu co phan tu bi par dominate
-					for (int j = 0; j != numR; j++) {
+					for (int j = 0; j < numR; j++) {
 						NaParticles[replace].pointy[j] = par.pointy[j];
 						NaParticles[replace].points[j] = new Point(par.points[j].x, par.points[j].y);
 
@@ -335,23 +401,23 @@ public class PSO {
 					NaParticles[replace].distance = par.distance;
 				} else {
 					if (breakPoint != 100) { // Na not full, them truc tiep
-						for (int j = 0; j != numR; j++) {
+						for (int j = 0; j < numR; j++) {
 							NaParticles[breakPoint].pointy[j] = par.pointy[j];
 							NaParticles[breakPoint].points[j] = new Point(par.points[j].x, par.points[j].y);
 
 						}
 						NaParticles[breakPoint].distance = par.distance;
 					} else {
-						for (int j = 0; j != Nmax; j++) {
+						for (int j = 0; j < Nmax; j++) {
 							newPar[j] = new Path(numR);
-							for (int k = 0; k != numR; k++) {
+							for (int k = 0; k < numR; k++) {
 								newPar[j].pointy[k] = NaParticles[j].pointy[k];
 								newPar[j].points[k] = new Point(NaParticles[j].points[k].x, NaParticles[j].points[k].y);
 							}
 							newPar[j].distance = NaParticles[j].distance;
 						}
 						newPar[Nmax] = new Path(numR);
-						for (int j = 0; j != numR; j++) {
+						for (int j = 0; j < numR; j++) {
 							newPar[Nmax].pointy[j] = par.pointy[j];
 							newPar[Nmax].points[j] = new Point(par.points[j].x, par.points[j].y);
 
@@ -362,7 +428,7 @@ public class PSO {
 						// find worst CD to remove
 						worstCD = CD[0];
 						worstCDid = 0;
-						for (int i = 0; i != Nmax + 1; i++) {
+						for (int i = 0; i < Nmax + 1; i++) {
 							if (CD[i] < worstCD) { // ??? vi sao thay CD thap nhat
 								worstCD = CD[i];
 								worstCDid = i;
@@ -370,7 +436,7 @@ public class PSO {
 						}
 						// thay the Na particle co CD thap nhat
 						if (worstCDid != Nmax) {
-							for (int i = 0; i != numR; i++) {
+							for (int i = 0; i < numR; i++) {
 								NaParticles[worstCDid].pointy[i] = par.pointy[i];
 								NaParticles[worstCDid].points[i] = new Point(par.points[i].x, par.points[i].y);
 							}
@@ -380,103 +446,6 @@ public class PSO {
 				}
 			}
 		}
-	}
-
-	public void gBestSelection(int it) {
-		double[] CD = new double[Nmax];
-		double bestCD;
-		int bestCDid;
-		boolean NaNull = true, NbNull = true;
-		for (int i = 0; i != NaParticles.length; i++) {
-			if (NaParticles[i].points[0] != null) {
-				NaNull = false;
-				break;
-			}
-		}
-		for (int i = 0; i != NbParticles.length; i++) {
-			if (NbParticles[i].points[0] != null) {
-				NbNull = false;
-				break;
-			}
-		}
-
-		// select the best CD particle as Gbest
-		if (NaNull == true) {
-			CD = crowdingDistance(NbParticles);
-			bestCD = CD[0];
-			bestCDid = 0;
-			for (int i = 0; i != Nmax; i++) {
-				if (CD[i] > bestCD && CD[i] > 0) {
-					bestCD = CD[i];
-					bestCDid = i;
-				}
-			}
-			for (int i = 0; i != numR; i++) {
-				gBest.pointy[i] = NbParticles[bestCDid].pointy[i];
-				gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
-			}
-			gBest.distance = NbParticles[bestCDid].distance;
-		} else if (NbNull == true) {
-			CD = crowdingDistance(NaParticles);
-			bestCD = CD[0];
-			bestCDid = 0;
-			for (int i = 0; i != Nmax; i++) {
-				if (CD[i] > bestCD && CD[i] > 0) {
-					bestCD = CD[i];
-					bestCDid = i;
-				}
-			}
-			for (int i = 0; i != numR; i++) {
-				gBest.pointy[i] = NaParticles[bestCDid].pointy[i];
-				gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
-			}
-			gBest.distance = NaParticles[bestCDid].distance;
-		} else {
-			double ps = 0.5 - 0.5 * it / IT;
-			double r = random.nextDouble();
-			if (ps < r) {
-				CD = crowdingDistance(NaParticles);
-				bestCD = CD[0];
-				bestCDid = 0;
-				for (int i = 0; i != Nmax; i++) {
-					if (CD[i] > bestCD && CD[i] > 0) {
-						bestCD = CD[i];
-						bestCDid = i;
-					}
-				}
-				for (int i = 0; i != numR; i++) {
-					gBest.pointy[i] = NaParticles[bestCDid].pointy[i];
-					gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
-				}
-				gBest.distance = NaParticles[bestCDid].distance;
-			} else {
-				CD = crowdingDistance(NbParticles);
-				bestCD = CD[0];
-				bestCDid = 0;
-				for (int i = 0; i != Nmax; i++) {
-					if (CD[i] > bestCD && CD[i] > 0) {
-						bestCD = CD[i];
-						bestCDid = i;
-					}
-				}
-				for (int i = 0; i != numR; i++) {
-					gBest.pointy[i] = NbParticles[bestCDid].pointy[i];
-					gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
-				}
-				gBest.distance = NbParticles[bestCDid].distance;
-			}
-		}
-	}
-	// end multi-objective
-
-	// Tra lai tap cac index tu cao den thap
-	public int[] indexRank(int[] rank) {
-		int length = rank.length;
-		int index[] = new int[length];
-		for (int i = 0; i < length; i++) {
-			index[rank[i]] = i;
-		}
-		return index;
 	}
 
 	public boolean pathCollision(Path path) {
@@ -517,43 +486,18 @@ public class PSO {
 		return count;
 	}
 
-	public void getVelocity() {
-		vValue = new double[NP][numR];
-		for (int i = 0; i < NP; i++) {
-			for (int j = 0; j < numR; j++) {
-				vValue[i][j] = random.nextDouble() * (V_MAX - V_MIN + 1) + V_MIN;
-			}
-		}
-		return;
-	}
-
-	public Path mutation(Path path) {
-		int x1 = random.nextInt(Nmax);
-		int x2 = random.nextInt(Nmax);
-		double f = random.nextDouble();
-		for (int i = 0; i < numR; i++) {
-			path.pointy[i] += f * (NaParticles[x1].pointy[i] - NaParticles[x2].pointy[i]);
-			if (path.pointy[i] > maxPointy) {
-				path.pointy[i] = maxPointy;
-			} else if (path.pointy[i] < minPointy) {
-				path.pointy[i] = minPointy;
-			}
-			path.points[i] = Path.convertPointToPoint(path.pointy[i], (i + 1) * R, startPoint, endPoint);
-		}
-		path.distance();
-		return path;
-	}
-
 	public void run() {
-//		double angle = determinePathAngle();
-
 		V_MAX = maxPointy;
 		V_MIN = minPointy;
 		initialize(numR);
 
-		for (int i = 0; i != NP; i++) {
+		// Exogene strategy parameters - learning rate
+		lr1 = 1 / Math.sqrt(2 * numR);
+		lr2 = 1 / Math.sqrt(2 * Math.sqrt(numR));
+
+		for (int i = 0; i < NP; i++) {
 			pBest[i] = new Path(numR);
-			for (int j = 0; j != numR; j++) {
+			for (int j = 0; j < numR; j++) {
 				pBest[i].pointy[j] = particles[i].pointy[j];
 				pBest[i].points[j] = new Point(particles[i].points[j].x, particles[i].points[j].y);
 			}
@@ -566,18 +510,34 @@ public class PSO {
 		gBestSelection(0);
 
 		getVelocity();
+
 		boolean parColli, pBestColli;
 
 		// PSO
-		for (int i = 0; i != IT; i++) {
-			w = wMax - ((wMax - wMin) * i / IT);
-			for (int j = 0; j != NP; j++) {
-				for (int k = 0; k != numR; k++) {
-					r1 = random.nextDouble();
-					r2 = random.nextDouble();
+		for (int i = 0; i < IT; i++) {
+			for (int j = 0; j < NP; j++) {
+				for (int k = 0; k < numR; k++) {
+//					// PSO
+//					r1 = random.nextDouble();
+//					r2 = random.nextDouble();
+//
+//					vValue[j][k] = w * vValue[j][k] + c1 * r1 * (pBest[j].pointy[k] - particles[j].pointy[k])
+//							+ r2 * c2 * (gBest.pointy[k] - particles[j].pointy[k]);
 
-					vValue[j][k] = w * vValue[j][k] + c1 * r1 * (pBest[j].pointy[k] - particles[j].pointy[k])
-							+ r2 * c2 * (gBest.pointy[k] - particles[j].pointy[k]);
+					// PSO-ES
+					// N(0,1) is a random variable with Gaussian distribution, mean 0 and variance 1
+					// w*ik = wik + lr1.N(0,1)
+					double w0 = strategy[j][k] + lr1 * random.nextGaussian();
+					double w1 = strategy[j][k] + lr1 * random.nextGaussian();
+					double w2 = strategy[j][k] + lr1 * random.nextGaussian();
+
+					// b*g = bg + lr2.N(0,1)
+					double gB = gBest.pointy[k] + lr2 * random.nextGaussian();
+
+					// Vi_new = w*i0.Vi + w*i1.(bi - Xi) + w*i2.(b*g - Xi)
+					vValue[j][k] = w0 * vValue[j][k] + w1 * (pBest[j].pointy[k] - particles[j].pointy[k])
+							+ w2 * (gB - particles[j].pointy[k]);
+
 					particles[j].pointy[k] += vValue[j][k];
 
 					if (particles[j].pointy[k] > maxPointy) {
@@ -598,7 +558,7 @@ public class PSO {
 					r = random.nextDouble();
 					pm = (Math.exp(numcolli) - Math.exp(-numcolli)) / (Math.exp(numcolli) + Math.exp(-numcolli));
 					if (r < pm) {
-						particles[j] = mutation(particles[j]);
+						particles[j] = mutation(particles[j], j);
 					}
 				}
 
@@ -606,7 +566,7 @@ public class PSO {
 				pBestColli = pathCollision(pBest[j]);
 				if (parColli && pBestColli) {
 					if (compare(particles[j], pBest[j])) {
-						for (int k = 0; k != numR; k++) {
+						for (int k = 0; k < numR; k++) {
 							pBest[j].pointy[k] = particles[j].pointy[k];
 							pBest[j].points[k] = new Point(particles[j].points[k].x, particles[j].points[k].y);
 						}
@@ -615,7 +575,7 @@ public class PSO {
 					}
 				} else if (!parColli && !pBestColli) {
 					if (compare(particles[j], pBest[j])) {
-						for (int k = 0; k != numR; k++) {
+						for (int k = 0; k < numR; k++) {
 							pBest[j].pointy[k] = particles[j].pointy[k];
 							pBest[j].points[k] = new Point(particles[j].points[k].x, particles[j].points[k].y);
 						}
@@ -623,7 +583,7 @@ public class PSO {
 						addArchive(pBest[j], NaParticles);
 					}
 				} else if (!parColli && pBestColli) {
-					for (int k = 0; k != numR; k++) {
+					for (int k = 0; k < numR; k++) {
 						pBest[j].pointy[k] = particles[j].pointy[k];
 						pBest[j].points[k] = new Point(particles[j].points[k].x, particles[j].points[k].y);
 					}
@@ -669,5 +629,5 @@ public class PSO {
 		result.removeLast();
 		result.removeFirst();
 	}
-	
+
 }
