@@ -40,17 +40,6 @@ public class Path {
 	}
 
 	public static Point convertPointToPoint(double pointy, double pointx, Point start, Point end) {
-//		double temp1, temp2, AB;
-//		double sinp, cosp, x, y;
-//		temp1 = end.x - start.x;
-//		temp2 = end.y - start.y;
-//		AB = Math.hypot(temp1, temp2);
-//		cosp = (temp1 / AB) * Math.cos(Math.toRadians(angle)) - (temp2 / AB) * Math.sin(Math.toRadians(angle));
-//		sinp = (temp1 / AB) * Math.sin(Math.toRadians(angle)) + (temp2 / AB) * Math.cos(Math.toRadians(angle));
-//		x = start.x + R * cosp;
-//		y = start.y + R * sinp;
-//		Point p = new Point(x, y);
-//		return p;
 		double x, y, temp1, temp2, phi;
 		temp1 = end.x - start.x;
 		temp2 = end.y - start.y;
@@ -68,89 +57,11 @@ public class Path {
 			b = Math.hypot(points[i + 2].x - points[i + 1].x, points[i + 2].y - points[i + 1].y);
 			c1 = (points[i + 1].x - points[i].x) * (points[i + 2].x - points[i + 1].x);
 			c2 = (points[i + 1].y - points[i].y) * (points[i + 2].y - points[i + 1].y);
-			double temp = (c1 + c2) / (a * b);
-			if (temp >= 1)
-				sum += Math.PI;
-			else if (temp >= -1)
-				sum += Math.PI - Math.acos(temp);
+			sum += Math.PI - 1 / Math.cos((c1 + c2) / (a * b));
 		}
 		smooth = sum / (points.length - 2);
 		return smooth;
 	}
-
-	// Su dung dinh li cosin trong tam giac
-//	public double pathSmooth() {
-//		double temp = 0;
-//		double[] ang = new double[n];
-//		double a, b, c;
-//		for (int i = 0; i < n; i++) {
-//			if (i == 0) {
-//				a = Math.pow(points[0].x - PSO.startPoint.x, 2) + Math.pow(points[0].y - PSO.startPoint.y, 2);
-//				b = Math.pow(points[1].x - points[0].x, 2) + Math.pow(points[1].y - points[0].y, 2);
-//				c = Math.pow(PSO.startPoint.x - points[1].x, 2) + Math.pow(PSO.startPoint.y - points[1].y, 2);
-//				ang[0] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					PSO.startPoint.printPoint();
-//					points[0].printPoint();
-//					points[1].printPoint();
-//
-//				}
-//
-//				if (ang[0] != ang[0]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[0] = Math.toDegrees(Math.acos(-1));
-//					} else if ((a + b - c) / Math.sqrt(4 * a * b) > -1) {
-//						ang[0] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			} else if (i == n - 1) {
-//				a = Math.pow(points[n - 1].x - points[n - 2].x, 2) + Math.pow(points[n - 1].y - points[n - 2].y, 2);
-//				b = Math.pow(points[n - 1].x - PSO.endPoint.y, 2) + Math.pow(points[n - 1].y - PSO.endPoint.y, 2);
-//				c = Math.pow(points[n - 2].x - PSO.endPoint.x, 2) + Math.pow(points[n - 2].y - PSO.endPoint.y, 2);
-//				ang[n - 1] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					this.print();
-//					points[n - 2].printPoint();
-//					points[n - 1].printPoint();
-//					PSO.endPoint.printPoint();
-//				}
-//				if (ang[n - 1] != ang[n - 1]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[n - 1] = Math.toDegrees(Math.acos(-1));
-//					}
-//					if ((a + b - c) / Math.sqrt(4 * a * b) > 1) {
-//						ang[n - 1] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			} else {
-//				a = Math.pow(points[i - 1].x - points[i].x, 2) + Math.pow(points[i - 1].y - points[i].y, 2);
-//				b = Math.pow(points[i].x - points[i + 1].x, 2) + Math.pow(points[i].y - points[i + 1].y, 2);
-//				c = Math.pow(points[i - 1].x - points[i + 1].x, 2) + Math.pow(points[i - 1].y - points[i + 1].y, 2);
-//				ang[i] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					this.print();
-//					points[i - 1].printPoint();
-//					points[i].printPoint();
-//					points[i + 1].printPoint();
-//				}
-//				if (ang[i] != ang[i]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[i] = Math.toDegrees(Math.acos(-1));
-//					} else if ((a + b - c) / Math.sqrt(4 * a * b) > 1) {
-//						ang[i] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			}
-//		}
-//		for (int i = 0; i < n; i++) {
-//			temp += ang[i];
-//		}
-//		temp = temp / n;
-//		return 180 - temp;
-//	}
 
 	// Neu o ngoai canh AB thi tich vo huong AS va AB < 0, tuong tu
 	public static double p2sDistance(Point p1, Point p2, Point S) {
