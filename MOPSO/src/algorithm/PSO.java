@@ -477,8 +477,6 @@ public class PSO {
 	}
 
 	public void run() {
-//		double angle = determinePathAngle();
-
 		V_MAX = maxPointy;
 		V_MIN = minPointy;
 		initialize(numR);
