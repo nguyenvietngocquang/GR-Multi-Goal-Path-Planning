@@ -9,34 +9,35 @@ public class Path {
 	public double distance;
 	double R;
 
+	public Path(int number) {
+		this.n = number;
+		this.angles = new double[n];
+		this.points = new Point[n];
+	}
+
 	public Path(int number, double R, double[] angles, Point[] points) {
 		this.n = number;
 		this.angles = angles;
 		this.points = points;
 		this.R = R;
+
 		this.distance = 0;
+		this.distance += Math.hypot(PSO.startPoint.x - points[0].x, PSO.startPoint.y - points[0].y);
 		for (int i = 0; i < points.length - 1; i++) {
 			distance += Math.hypot(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
 		}
+		this.distance += Math.hypot(PSO.endPoint.x - points[points.length - 1].x,
+				PSO.endPoint.y - points[points.length - 1].y);
 	}
 
 	public void distance() {
 		this.distance = 0;
+		this.distance += Math.hypot(PSO.startPoint.x - points[0].x, PSO.startPoint.y - points[0].y);
 		for (int i = 0; i < points.length - 1; i++) {
-			this.distance += Math.hypot(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
+			distance += Math.hypot(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
 		}
-	}
-
-	public void print() {
-		for (int i = 0; i != n; i++) {
-			points[i].printPoint();
-		}
-	}
-
-	public Path(int number) {
-		this.n = number;
-		this.angles = new double[n];
-		this.points = new Point[n];
+		this.distance += Math.hypot(PSO.endPoint.x - points[points.length - 1].x,
+				PSO.endPoint.y - points[points.length - 1].y);
 	}
 
 	public static Point convertPointToPoint(double angle, double R, Point start, Point end) {
@@ -52,18 +53,31 @@ public class Path {
 		return new Point(x, y);
 	}
 
+	public double smooth(Point point1, Point point2, Point point3) {
+		double a, b, c1, c2;
+		a = Math.hypot(point2.x - point1.x, point2.y - point1.y);
+		b = Math.hypot(point3.x - point2.x, point3.y - point2.y);
+		c1 = (point2.x - point1.x) * (point3.x - point2.x);
+		c2 = (point2.y - point1.y) * (point3.y - point2.y);
+		return Math.PI - 1 / Math.cos((c1 + c2) / (a * b));
+	}
+
 	public double pathSmooth() {
-		double a, b, c1, c2, smooth;
-		double sum = 0;
-		for (int i = 0; i < points.length - 2; i++) {
-			a = Math.hypot(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
-			b = Math.hypot(points[i + 2].x - points[i + 1].x, points[i + 2].y - points[i + 1].y);
-			c1 = (points[i + 1].x - points[i].x) * (points[i + 2].x - points[i + 1].x);
-			c2 = (points[i + 1].y - points[i].y) * (points[i + 2].y - points[i + 1].y);
-			sum += Math.PI - 1 / Math.cos((c1 + c2) / (a * b));
+		double smooth = 0;
+		if (points.length == 1) {
+			return smooth(PSO.startPoint, points[0], PSO.endPoint);
+		} else if (points.length == 2) {
+			smooth += smooth(PSO.startPoint, points[0], points[1]);
+			smooth += smooth(points[0], points[1], PSO.endPoint);
+			return smooth / 2;
+		} else {
+			smooth += smooth(PSO.startPoint, points[0], points[1]);
+			for (int i = 0; i < points.length - 2; i++) {
+				smooth += smooth(points[i], points[i + 1], points[i + 2]);
+			}
+			smooth += smooth(points[points.length - 2], points[points.length - 1], PSO.endPoint);
+			return smooth / points.length;
 		}
-		smooth = sum / (points.length - 2);
-		return smooth;
 	}
 
 	// Su dung dinh li cosin trong tam giac
@@ -77,14 +91,6 @@ public class Path {
 //				b = Math.pow(points[1].x - points[0].x, 2) + Math.pow(points[1].y - points[0].y, 2);
 //				c = Math.pow(PSO.startPoint.x - points[1].x, 2) + Math.pow(PSO.startPoint.y - points[1].y, 2);
 //				ang[0] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					PSO.startPoint.printPoint();
-//					points[0].printPoint();
-//					points[1].printPoint();
-//
-//				}
-//
 //				if (ang[0] != ang[0]) {
 //					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
 //						ang[0] = Math.toDegrees(Math.acos(-1));
@@ -97,13 +103,6 @@ public class Path {
 //				b = Math.pow(points[n - 1].x - PSO.endPoint.y, 2) + Math.pow(points[n - 1].y - PSO.endPoint.y, 2);
 //				c = Math.pow(points[n - 2].x - PSO.endPoint.x, 2) + Math.pow(points[n - 2].y - PSO.endPoint.y, 2);
 //				ang[n - 1] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					this.print();
-//					points[n - 2].printPoint();
-//					points[n - 1].printPoint();
-//					PSO.endPoint.printPoint();
-//				}
 //				if (ang[n - 1] != ang[n - 1]) {
 //					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
 //						ang[n - 1] = Math.toDegrees(Math.acos(-1));
@@ -117,13 +116,6 @@ public class Path {
 //				b = Math.pow(points[i].x - points[i + 1].x, 2) + Math.pow(points[i].y - points[i + 1].y, 2);
 //				c = Math.pow(points[i - 1].x - points[i + 1].x, 2) + Math.pow(points[i - 1].y - points[i + 1].y, 2);
 //				ang[i] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (a * b == 0) {
-//					System.out.println("ERROR with " + a + " " + b);
-//					this.print();
-//					points[i - 1].printPoint();
-//					points[i].printPoint();
-//					points[i + 1].printPoint();
-//				}
 //				if (ang[i] != ang[i]) {
 //					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
 //						ang[i] = Math.toDegrees(Math.acos(-1));
@@ -161,7 +153,7 @@ public class Path {
 
 		// distance from a line segment to an obstacle vertice
 		for (int i = 0; i <= n; i++) {
-			dis[i] = 9999;
+			dis[i] = Double.POSITIVE_INFINITY;
 			for (int j = 0; j != g.obstacleNumber; j++) {
 				for (int k = 0; k != g.obstacles[j].cornerNumber; k++) {
 					if (i == 0) {
