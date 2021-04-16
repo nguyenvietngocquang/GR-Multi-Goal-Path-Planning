@@ -40,7 +40,7 @@ public class Main {
 			System.out.println("Something went wrong!");
 			e.printStackTrace();
 		}
-		
+
 		time = System.currentTimeMillis() - time;
 		System.out.println("Time:\t" + time + " ms");
 		System.out.println("Done!");
