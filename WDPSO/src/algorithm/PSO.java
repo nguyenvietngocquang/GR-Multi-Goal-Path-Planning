@@ -34,7 +34,7 @@ public class PSO {
 	public Path NbParticles[] = new Path[Nmax];
 	public static double r1, r2;
 	public static double r, pm;
-	public static final double c1 = 0.1, c2 = 0.1;
+	public static final double c1 = 2, c2 = 2;
 	public double AB;
 	public static double w;
 	public static final double wMax = 0.9, wMin = 0.2;
@@ -101,32 +101,42 @@ public class PSO {
 	public void initializeNaNb() {
 		for (int i = 0; i < Nmax; i++) {
 			NaParticles[i] = new Path(numR);
+			NbParticles[i] = new Path(numR);
 		}
 		for (int i = 0; i < NP; i++) {
 			if (pathCollision(particles[i]) == false) {
 				NaParticles = addArchive(particles[i], NaParticles);
+			} else {
+				NbParticles = addArchive(particles[i], NbParticles);
 			}
 		}
 	}
 
-	public void gBestSelection() {
+	public void gBestSelection(int it) {
 		double CD[] = new double[Nmax];
 		double bestCD;
-		int bestCDid, max = 0;
-		boolean NaNull = true;
+		int bestCDid, maxa = 0, maxb = 0;
+		boolean NaNull = true, NbNull = true;
 		for (int i = 0; i < NaParticles.length; i++) {
 			if (NaParticles[i].points[0] != null) {
 				NaNull = false;
-				max++;
+				maxa++;
 			}
 		}
-		if (NaNull == false) {
-			for (int i = 0; i < max; i++) {
+		for (int i = 0; i < NbParticles.length; i++) {
+			if (NbParticles[i].points[0] != null) {
+				NbNull = false;
+				maxb++;
+			}
+		}
+
+		if (NbNull == true) {
+			for (int i = 0; i < maxa; i++) {
 				CD[i] = NaParticles[i].distance;
 			}
 			bestCD = CD[0];
 			bestCDid = 0;
-			for (int i = 1; i < max; i++) {
+			for (int i = 1; i < maxa; i++) {
 				if (CD[i] < bestCD) {
 					bestCD = CD[i];
 					bestCDid = i;
@@ -136,6 +146,61 @@ public class PSO {
 				gBest.angles[i] = NaParticles[bestCDid].angles[i];
 				gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
 				gBest.distance = NaParticles[bestCDid].distance;
+			}
+		} else if (NaNull == true) {
+			for (int i = 0; i < maxb; i++) {
+				CD[i] = NbParticles[i].distance;
+			}
+			bestCD = CD[0];
+			bestCDid = 0;
+			for (int i = 1; i < maxb; i++) {
+				if (CD[i] < bestCD) {
+					bestCD = CD[i];
+					bestCDid = i;
+				}
+			}
+			for (int i = 0; i < numR; i++) {
+				gBest.angles[i] = NbParticles[bestCDid].angles[i];
+				gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
+				gBest.distance = NbParticles[bestCDid].distance;
+			}
+		} else {
+			double ps = 0.5 - 0.5 * it / IT;
+			double r = random.nextDouble();
+			if (ps < r) {
+				for (int i = 0; i < maxa; i++) {
+					CD[i] = NaParticles[i].distance;
+				}
+				bestCD = CD[0];
+				bestCDid = 0;
+				for (int i = 1; i < maxa; i++) {
+					if (CD[i] < bestCD) {
+						bestCD = CD[i];
+						bestCDid = i;
+					}
+				}
+				for (int i = 0; i < numR; i++) {
+					gBest.angles[i] = NaParticles[bestCDid].angles[i];
+					gBest.points[i] = new Point(NaParticles[bestCDid].points[i].x, NaParticles[bestCDid].points[i].y);
+					gBest.distance = NaParticles[bestCDid].distance;
+				}
+			} else {
+				for (int i = 0; i < maxb; i++) {
+					CD[i] = NbParticles[i].distance;
+				}
+				bestCD = CD[0];
+				bestCDid = 0;
+				for (int i = 1; i < maxb; i++) {
+					if (CD[i] < bestCD) {
+						bestCD = CD[i];
+						bestCDid = i;
+					}
+				}
+				for (int i = 0; i < numR; i++) {
+					gBest.angles[i] = NbParticles[bestCDid].angles[i];
+					gBest.points[i] = new Point(NbParticles[bestCDid].points[i].x, NbParticles[bestCDid].points[i].y);
+					gBest.distance = NbParticles[bestCDid].distance;
+				}
 			}
 		}
 	}
@@ -274,7 +339,7 @@ public class PSO {
 		initializeNaNb();
 
 		gBest = new Path(numR);
-		gBestSelection();
+		gBestSelection(0);
 
 		getVelocity();
 		boolean pathColli, pBestColli;
@@ -340,11 +405,12 @@ public class PSO {
 						}
 						pBest[j].distance = particles[j].distance;
 					}
+					NbParticles = addArchive(pBest[j], NbParticles);
 				}
 			}
 
 			// select gBest
-			gBestSelection();
+			gBestSelection(i);
 		}
 
 		result.add(startPoint);
@@ -470,12 +536,12 @@ public class PSO {
 		}
 
 		if (maxUp * disUp < maxDown * disDown) {
-			if (disUp > this.numR * R) {
+			if (disUp > AB) {
 				this.numR = (int) (disUp / R) + 1;
 			}
 			return maxUp;
 		} else {
-			if (disDown > this.numR * R) {
+			if (disDown > AB) {
 				this.numR = (int) (disDown / R) + 1;
 			}
 			return maxDown;
@@ -484,14 +550,14 @@ public class PSO {
 
 //	// multi-objective
 //	public void initializeNaNb() {
-//		for (int i = 0; i != Nmax; i++) {
+//		for (int i = 0; i < Nmax; i++) {
 //			NaParticles[i] = new Path(numR);
 //			NbParticles[i] = new Path(numR);
 //		}
-//		for (int i = 0; i != NP; i++) {
+//		for (int i = 0; i < NP; i++) {
 //			if (pathCollision(particles[i]) == false) {
 //				addArchive(particles[i], NaParticles);
-//			} else if (pathCollision(particles[i]) == true) {
+//			} else {
 //				addArchive(particles[i], NbParticles);
 //			}
 //		}
@@ -914,17 +980,17 @@ public class PSO {
 //
 //			}
 //
-////			for (int j = 0; j < Nmax; j++) {
-////				System.out.print("\nNa #" + j + ": ");
-////				if (NaParticles[j].points[0] != null) {
-////					for (int k = 0; k < numR; k++) {
-////						System.out.print("(" + df.format(NaParticles[j].points[k].x) + ", "
-////								+ df.format(NaParticles[j].points[k].y) + ")");
-////					}
-////					System.out.print(NaParticles[j].distance + " " + NaParticles[j].pathSafety(graph) + " "
-////							+ NaParticles[j].pathSmooth());
-////				}
-////			}
+//			for (int j = 0; j < Nmax; j++) {
+//				System.out.print("\nNa #" + j + ": ");
+//				if (NaParticles[j].points[0] != null) {
+//					for (int k = 0; k < numR; k++) {
+//						System.out.print("(" + df.format(NaParticles[j].points[k].x) + ", "
+//								+ df.format(NaParticles[j].points[k].y) + ")");
+//					}
+//					System.out.print(NaParticles[j].distance + " " + NaParticles[j].pathSafety(graph) + " "
+//							+ NaParticles[j].pathSmooth());
+//				}
+//			}
 //
 //			gBestSelection(i);
 //
