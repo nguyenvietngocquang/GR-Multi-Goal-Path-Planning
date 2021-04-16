@@ -32,7 +32,7 @@ public class PSO {
 	public Path NbParticles[] = new Path[Nmax];
 	public static double r1, r2;
 	public static double r, pm;
-	public static final double c1 = 0.1, c2 = 0.1;
+	public static final double c1 = 0.2, c2 = 0.2;
 	public double AB;
 	public static double w;
 	public static final double wMax = 0.9, wMin = 0.2;
@@ -477,8 +477,6 @@ public class PSO {
 	}
 
 	public void run() {
-//		double angle = determinePathAngle();
-
 		V_MAX = maxPointy;
 		V_MIN = minPointy;
 		initialize(numR);
@@ -589,7 +587,7 @@ public class PSO {
 
 		}
 
-		System.out.println("\nPSO: Done!");
+		System.out.println("\nPSO: Done!\n");
 
 		result.add(startPoint);
 		for (int i = 0; i < numR; i++) {

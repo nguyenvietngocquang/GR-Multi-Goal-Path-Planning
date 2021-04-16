@@ -27,7 +27,7 @@ public class Main {
 		ArrayList<Point> result = new ArrayList<Point>();
 
 		try {
-			PSO pso = new PSO(50, pointsToVisit.get(0), pointsToVisit.get(1), graph);
+			PSO pso = new PSO(20, pointsToVisit.get(0), pointsToVisit.get(1), graph);
 			pso.run();
 			result.add(pointsToVisit.get(0));
 			for (int j = 0; j < pso.result.size(); j++) {
@@ -40,7 +40,7 @@ public class Main {
 			System.out.println("Something went wrong!");
 			e.printStackTrace();
 		}
-		
+
 		time = System.currentTimeMillis() - time;
 		System.out.println("Time:\t" + time + " ms");
 		System.out.println("Done!");
