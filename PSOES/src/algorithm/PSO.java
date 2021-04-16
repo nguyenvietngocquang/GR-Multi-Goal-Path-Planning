@@ -614,10 +614,9 @@ public class PSO {
 				System.out.print("(" + df.format(gBest.points[j].x) + ", " + df.format(gBest.points[j].y) + ") ");
 			}
 			System.out.println();
-
 		}
 
-		System.out.println("\nPSO: Done!");
+		System.out.println("\nPSO: Done!\n");
 
 		result.add(startPoint);
 		for (int i = 0; i < numR; i++) {
