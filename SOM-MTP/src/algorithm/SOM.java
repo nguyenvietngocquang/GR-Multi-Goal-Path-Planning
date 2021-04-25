@@ -49,7 +49,7 @@ public class SOM {
 		getPath();
 
 		time = System.currentTimeMillis() - time;
-		System.out.println("SOM:\t" + time / 1000F + "s");
+		System.out.println("Time:\t" + time / 1000F + "s");
 		System.out.println("Length:\t" + pathLength);
 	}
 
@@ -206,15 +206,10 @@ public class SOM {
 		Arrays.sort(index);
 
 		// Get path
-		File f = new File("neurons.txt");
-		FileWriter fw = new FileWriter(f);
-		fw.write("List of neurons:\n");
-
 		this.graphDivision.updateMaklink(graph, inhibited);
 		flag--;
 		for (int i = 0; i < flag; i++) {
 			Neuron neuron = ring.get(index[i]);
-			fw.write("(" + neuron.x + ", " + neuron.y + ")\n");
 			AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.allMAKLINK, neuron,
 					ring.get(index[i + 1]));
 			pathLength += findPath.length;
@@ -223,19 +218,16 @@ public class SOM {
 			}
 		}
 		Neuron neuron = ring.get(index[flag]);
-		fw.write("(" + neuron.x + ", " + neuron.y + ")\n");
 		AStar findPath = new AStar(graph, graphDivision.allPoints, graphDivision.allMAKLINK, neuron,
 				ring.get(index[0]));
 		pathLength += findPath.length;
-		for (int j = 0; j < findPath.path.size() - 1; j++) {
+		for (int j = 0; j < findPath.path.size(); j++) {
 			path.add(findPath.path.get(j));
 		}
-		fw.write("-1");
-		fw.close();
 
 		// Save path
-		f = new File("path.txt");
-		fw = new FileWriter(f);
+		File f = new File("path.txt");
+		FileWriter fw = new FileWriter(f);
 		fw.write("Path to follow:\n");
 		for (Point point : path) {
 			fw.write("(" + point.x + ", " + point.y + ")\n");

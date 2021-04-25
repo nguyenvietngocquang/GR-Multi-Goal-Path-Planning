@@ -1,39 +1,39 @@
 1. Test case 1:
-SOM:	3.076s
-Length:	208.3528165039072
+SOM:	3.054s
+Length:	209.1832
 
 2. Test case 2:
 SOM:	3.135s
-Length:	265.4354802280393
+Length:	266.2630
 
 3. Test case 3:
 SOM:	5.144s
-Length:	285.2147663790356
+Length:	284.2103
 
 4. Test case 4:
 SOM:	10.402s
-Length:	305.3172997751382
+Length:	305.3151
 
 5. Test case 5:
 SOM:	30.778s
-Length:	408.35413913421627
+Length:	402.0825
 
 6. Test case 6:
-SOM:	6.312s
-Length:	335.0117116529193
+SOM:	3.753s
+Length:	335.0110
 
 7. Test case 7:
-SOM:	8.758s
-Length:	384.484412954477
+SOM:	7.758s
+Length:	383.7152
 
 8. Test case 8:
 SOM:	7.553s
-Length:	389.88470638494834
+Length:	389.9609
 
 9. Test case 9:
-SOM:	7.331s
-Length:	327.06923853550774
+SOM:	7.031s
+Length:	328.5380
 
 10. Test case 10:
-SOM:	13.372s
-Length:	289.8391388359807
+SOM:	12.172s
+Length:	289.7840

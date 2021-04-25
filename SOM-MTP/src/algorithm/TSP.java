@@ -41,7 +41,7 @@ public class TSP {
 		getPath();
 
 		time = System.currentTimeMillis() - time;
-		System.out.println("TSP:\t" + time / 1000F + "s");
+		System.out.println("Time:\t" + time / 1000F + "s");
 		System.out.println("Length:\t" + pathLength);
 	}
 
@@ -152,6 +152,7 @@ public class TSP {
 		}
 		pathLength += ring.get(index[flag]).distanceFrom(ring.get(index[0]));
 		path.add(ring.get(index[flag]));
+		path.add(ring.get(index[0]));
 	}
 
 	// Compute neighborhood function
