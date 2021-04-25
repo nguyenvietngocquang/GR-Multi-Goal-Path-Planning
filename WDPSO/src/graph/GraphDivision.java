@@ -15,8 +15,6 @@ public class GraphDivision {
 	public LinkedList<Line> lines = new LinkedList<Line>(); // Luu tru cac doan da noi de lay trung diem
 	public LinkedList<Point> midPoints = new LinkedList<Point>(); // Luu tru visit points + mid points
 	public LinkedList<Line> MAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua midPoints
-	public LinkedList<Point> allPoints = new LinkedList<Point>(); // Luu tru visit points + mid points + neurons
-	public LinkedList<Line> allMAKLINK = new LinkedList<Line>(); // Luu tru MAKLINK cua allPoints
 
 	// Return if m, n same side or not with line p1p2
 	public boolean SameSide(Point p1, Point p2, Point m, Point n) {

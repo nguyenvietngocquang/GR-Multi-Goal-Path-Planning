@@ -12,9 +12,10 @@ public class MakeWeightedGraph {
 
 	public MakeWeightedGraph(Graph myGraph, LinkedList<Point> visitPoints, LinkedList<Point> midPoints,
 			LinkedList<Line> lines) {
-		this.weights = new double[visitPoints.size()][visitPoints.size()];
-		for (int i = 0; i < visitPoints.size(); i++) {
-			for (int j = i; j < visitPoints.size(); j++) {
+		int size = visitPoints.size();
+		this.weights = new double[size][size];
+		for (int i = 0; i < size; i++) {
+			for (int j = i; j < size; j++) {
 				if (i == j) {
 					weights[i][j] = 0;
 				} else {

@@ -2,6 +2,7 @@ package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -50,6 +51,16 @@ public class Main {
 					result.add(pso.result.get(j));
 				}
 				// End PSO
+
+				// Save path
+				File f = new File("path.txt");
+				FileWriter fw = new FileWriter(f);
+				fw.write("Path to follow:\n");
+				for (Point point : result) {
+					fw.write("(" + point.x + ", " + point.y + ")\n");
+				}
+				fw.write("-1");
+				fw.close();
 			}
 			result.add(TSP.answer.get(0));
 			System.out.println("Length:\t" + length);
