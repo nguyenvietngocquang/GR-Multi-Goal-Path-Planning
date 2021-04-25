@@ -9,7 +9,6 @@ import java.util.Scanner;
 
 import algorithm.TSP;
 import gui.GUIRobotics;
-import util.Neuron;
 import util.Point;
 
 public class Test {
@@ -74,14 +73,12 @@ public class Test {
 
 		// Ve do thi
 		for (Point point : pointsToVisit) {
-			gui.canvas.drawPoint(point, Color.GREEN);
+			gui.canvas.drawPoint(point, Color.BLACK);
 		}
-		for (Neuron neuron : tsp.inhibited) {
-			gui.canvas.drawPoint(neuron, Color.ORANGE);
+		LinkedList<Point> neurons = new LinkedList<Point>();
+		for (int i = 0; i < tsp.inhibited.size(); i++) {
+			neurons.add(tsp.inhibited.get(i));
 		}
-		for (int i = 0; i < tsp.path.size() - 1; i++) {
-			gui.canvas.drawLine(tsp.path.get(i), tsp.path.get(i + 1), Color.BLACK);
-		}
-		gui.canvas.drawLine(tsp.path.getLast(), tsp.path.getFirst(), Color.BLACK);
+		gui.canvas.drawLines(tsp.path, neurons);
 	}
 }

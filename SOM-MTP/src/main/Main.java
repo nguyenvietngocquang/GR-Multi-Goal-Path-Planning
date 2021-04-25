@@ -40,25 +40,22 @@ public class Main {
 		double x = scan.nextDouble();
 		while (x != -1) {
 			double y = scan.nextDouble();
-			pointsToVisit.addLast(new Point(x, y));
+			pointsToVisit.add(new Point(x, y));
 			x = scan.nextDouble();
 		}
 		scan.close();
-
 		return pointsToVisit;
 	}
 
 	public static void showResult(LinkedList<Point> pointsToVisit, SOM som, GUIRobotics gui) {
 		// Ve do thi
 		for (Point point : pointsToVisit) {
-			gui.canvas.drawPoint(point, Color.GREEN);
+			gui.canvas.drawPoint(point, Color.RED);
 		}
+		LinkedList<Point> neurons = new LinkedList<Point>();
 		for (Neuron neuron : som.inhibited) {
-			gui.canvas.drawPoint(neuron, Color.ORANGE);
+			neurons.add(neuron);
 		}
-		for (int i = 0; i < som.path.size() - 1; i++) {
-			gui.canvas.drawLine(som.path.get(i), som.path.get(i + 1), Color.BLACK);
-		}
-		gui.canvas.drawLine(som.path.getLast(), som.path.getFirst(), Color.BLACK);
+		gui.canvas.drawLines(som.path, neurons);
 	}
 }
