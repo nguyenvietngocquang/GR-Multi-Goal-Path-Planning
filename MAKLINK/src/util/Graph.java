@@ -46,19 +46,19 @@ public class Graph {
 			obstacles = obs;
 		}
 
-		FileWriter obtaclesFile = new FileWriter(fileName);
+		FileWriter obstaclesFile = new FileWriter(fileName);
 		for (int i = 0; i < n; i++) {
-			obtaclesFile.write("-1");
+			obstaclesFile.write("-1");
 			for (int g = 0; g < obs[i].cornerNumber; g++) {
-				obtaclesFile.write("\n");
-				obtaclesFile.write(String.valueOf(obs[i].points[g].x));
-				obtaclesFile.write(" ");
-				obtaclesFile.write(String.valueOf(obs[i].points[g].y));
+				obstaclesFile.write("\n");
+				obstaclesFile.write(String.valueOf(obs[i].points[g].x));
+				obstaclesFile.write(" ");
+				obstaclesFile.write(String.valueOf(obs[i].points[g].y));
 			}
-			obtaclesFile.write("\n");
+			obstaclesFile.write("\n");
 		}
-		obtaclesFile.write("-1");
-		obtaclesFile.close();
+		obstaclesFile.write("-1");
+		obstaclesFile.close();
 	}
 
 	public Obstacle[] addPoly(int n, Obstacle arr[], Obstacle x) {
