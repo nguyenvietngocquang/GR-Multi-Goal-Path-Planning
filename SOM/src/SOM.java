@@ -179,7 +179,7 @@ public class SOM {
 
 		// Print out cluster
 		int count = 1;
-		System.out.println("--- CLUSTER ---");
+		System.out.println("----- CLUSTER -----");
 		for (int i = 0; i < neuronNumber; i++) {
 			if (!cluster[i].isEmpty()) {
 				System.out.println(count + ". Cluster " + i + ":\t" + cluster[i].size());
