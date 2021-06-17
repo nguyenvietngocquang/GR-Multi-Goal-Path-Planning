@@ -15,8 +15,8 @@ public class ObstaclesGraph {
 		this.points = points;
 	}
 
-	public static ArrayList<ObstaclesGraph> getObtacles(String path_file) {
-		ArrayList<ObstaclesGraph> obtacles = new ArrayList<ObstaclesGraph>();
+	public static ArrayList<ObstaclesGraph> getObstacles(String path_file) {
+		ArrayList<ObstaclesGraph> obstacles = new ArrayList<ObstaclesGraph>();
 
 		try {
 			System.setIn(new FileInputStream(path_file));
@@ -32,7 +32,7 @@ public class ObstaclesGraph {
 			String s = sc.nextLine();
 			if (s.equals("-1")) {
 				if (points != null && points.size() != 0)
-					obtacles.add(new ObstaclesGraph(points));
+					obstacles.add(new ObstaclesGraph(points));
 				points = new ArrayList<>();
 				continue;
 			}
@@ -41,14 +41,14 @@ public class ObstaclesGraph {
 			points.add(new Point(Double.parseDouble(temp[0]), Double.parseDouble(temp[1])));
 		}
 		sc.close();
-		return obtacles;
+		return obstacles;
 	}
 
 	public static void main(String[] args) {
-		ArrayList<ObstaclesGraph> obtacles = ObstaclesGraph.getObtacles("obtacles.txt");
-		for (ObstaclesGraph obtacle : obtacles) {
-			for (Point p : obtacle.points) {
-				System.out.print("(" + p.x + ", " + p.y + ") , ");
+		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles("obstacles.txt");
+		for (ObstaclesGraph obstacle : obstacles) {
+			for (Point p : obstacle.points) {
+				System.out.print("(" + p.x + ", " + p.y + ")\t");
 			}
 			System.out.println();
 		}

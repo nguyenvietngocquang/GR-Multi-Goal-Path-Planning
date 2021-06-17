@@ -27,7 +27,7 @@ public class Main {
 			AStar findPath = new AStar(graph, graphDivision.midPoints, graphDivision.MAKLINK, pointsToVisit.get(0),
 					pointsToVisit.get(4));
 			System.out.println("Length:\t" + findPath.length);
-			
+
 			gui.canvas.drawLines(findPath.path, pointsToVisit);
 		} catch (Exception e) {
 			System.out.println("Something went wrong!");
@@ -36,8 +36,7 @@ public class Main {
 
 		time = System.currentTimeMillis() - time;
 		System.out.println("Time:\t" + time / 1000F + "s");
-
-		System.out.println("End!");
+		System.out.println("Done!");
 	}
 
 	public static LinkedList<Point> readPointData(String filename) throws IOException {
