@@ -80,58 +80,6 @@ public class Path {
 		}
 	}
 
-	// Su dung dinh li cosin trong tam giac
-//	public double pathSmooth() {
-//		double temp = 0;
-//		double[] ang = new double[n];
-//		double a, b, c;
-//		for (int i = 0; i < n; i++) {
-//			if (i == 0) {
-//				a = Math.pow(points[0].x - PSO.startPoint.x, 2) + Math.pow(points[0].y - PSO.startPoint.y, 2);
-//				b = Math.pow(points[1].x - points[0].x, 2) + Math.pow(points[1].y - points[0].y, 2);
-//				c = Math.pow(PSO.startPoint.x - points[1].x, 2) + Math.pow(PSO.startPoint.y - points[1].y, 2);
-//				ang[0] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (ang[0] != ang[0]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[0] = Math.toDegrees(Math.acos(-1));
-//					} else if ((a + b - c) / Math.sqrt(4 * a * b) > -1) {
-//						ang[0] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			} else if (i == n - 1) {
-//				a = Math.pow(points[n - 1].x - points[n - 2].x, 2) + Math.pow(points[n - 1].y - points[n - 2].y, 2);
-//				b = Math.pow(points[n - 1].x - PSO.endPoint.y, 2) + Math.pow(points[n - 1].y - PSO.endPoint.y, 2);
-//				c = Math.pow(points[n - 2].x - PSO.endPoint.x, 2) + Math.pow(points[n - 2].y - PSO.endPoint.y, 2);
-//				ang[n - 1] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (ang[n - 1] != ang[n - 1]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[n - 1] = Math.toDegrees(Math.acos(-1));
-//					}
-//					if ((a + b - c) / Math.sqrt(4 * a * b) > 1) {
-//						ang[n - 1] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			} else {
-//				a = Math.pow(points[i - 1].x - points[i].x, 2) + Math.pow(points[i - 1].y - points[i].y, 2);
-//				b = Math.pow(points[i].x - points[i + 1].x, 2) + Math.pow(points[i].y - points[i + 1].y, 2);
-//				c = Math.pow(points[i - 1].x - points[i + 1].x, 2) + Math.pow(points[i - 1].y - points[i + 1].y, 2);
-//				ang[i] = Math.toDegrees(Math.acos((a + b - c) / Math.sqrt(4 * a * b)));
-//				if (ang[i] != ang[i]) {
-//					if ((a + b - c) / Math.sqrt(4 * a * b) < -1) {
-//						ang[i] = Math.toDegrees(Math.acos(-1));
-//					} else if ((a + b - c) / Math.sqrt(4 * a * b) > 1) {
-//						ang[i] = Math.toDegrees(Math.acos(1));
-//					}
-//				}
-//			}
-//		}
-//		for (int i = 0; i < n; i++) {
-//			temp += ang[i];
-//		}
-//		temp = temp / n;
-//		return 180 - temp;
-//	}
-
 	// Neu o ngoai canh AB thi tich vo huong AS va AB < 0, tuong tu
 	public static double p2sDistance(Point p1, Point p2, Point S) {
 		Point p1S = new Point(S.x - p1.x, S.y - p1.y);
