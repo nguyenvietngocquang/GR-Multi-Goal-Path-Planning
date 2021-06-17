@@ -182,33 +182,4 @@ public class GUIRobotics {
 		}
 	}
 
-	public static void main(String[] args) throws FileNotFoundException {
-
-		GUIRobotics gui = new GUIRobotics(600, 110, 11);
-		gui.generateEnvironment("obstacles.txt");
-
-		System.setIn(new FileInputStream("maklink.txt"));
-		Scanner sc = new Scanner(System.in);
-
-		sc.nextLine();
-		String string = sc.nextLine();
-		while (!string.equals("-1")) {
-
-			// Read path planning
-			String numbers[] = string.replaceAll(",", "").replaceAll("\\(", "").replaceAll("\\)", "").split("\\s+");
-
-			ArrayList<Point> points = new ArrayList<>();
-			for (int i = 0; i < numbers.length / 2; i++) {
-				points.add(new Point(Double.parseDouble(numbers[2 * i]), Double.parseDouble(numbers[2 * i + 1])));
-			}
-
-			for (int i = 0; i < points.size() / 2; i++) {
-				gui.canvas.drawLineWithoutMiddle(points.get(2 * i), points.get(2 * i + 1));
-			}
-
-			string = sc.nextLine();
-		}
-		sc.close();
-	}
-
 }
