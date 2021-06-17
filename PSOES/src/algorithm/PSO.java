@@ -13,7 +13,7 @@ import util.Point;
 public class PSO {
 	public final int NP = 100; // population size
 	public final int Nmax = 10; // maximum of non-dominated archive size
-	public final int IT = 100;
+	public final int IT = 200;
 	public double V_MAX;
 	public double V_MIN;
 	public double maxPointy = 5;
@@ -99,7 +99,7 @@ public class PSO {
 			}
 		}
 
-		// select the best CD particle as Gbest
+		// Select the best CD particle as gBest
 		if (NaNull == true) {
 			CD = crowdingDistance(NbParticles);
 			bestCD = CD[0];
@@ -202,7 +202,7 @@ public class PSO {
 		return path;
 	}
 
-	// multi-objective
+	// Multi-objective
 	// Tra lai rank cua cac phan tu
 	public int[] particleRank(Path[] particles, int type) {
 		int len = particles.length;
@@ -322,7 +322,7 @@ public class PSO {
 		}
 		return CD;
 	}
-	// end multi-objective
+	// End multi-objective
 
 	public boolean compare(Path particle1, Path particle2) {
 		if (particle1.points[0] == null)
@@ -425,7 +425,7 @@ public class PSO {
 						newPar[Nmax].distance = par.distance;
 
 						CD = crowdingDistance(newPar);
-						// find worst CD to remove
+						// Find worst CD to remove
 						worstCD = CD[0];
 						worstCDid = 0;
 						for (int i = 0; i < Nmax + 1; i++) {
@@ -434,7 +434,7 @@ public class PSO {
 								worstCDid = i;
 							}
 						}
-						// thay the Na particle co CD thap nhat
+						// Thay the Na particle co CD thap nhat
 						if (worstCDid != Nmax) {
 							for (int i = 0; i < numR; i++) {
 								NaParticles[worstCDid].pointy[i] = par.pointy[i];
@@ -551,7 +551,7 @@ public class PSO {
 				}
 				particles[j].distance();
 
-				// MUTATE IF COLLIDE
+				// Mutate if collide
 				parColli = pathCollision(particles[j]);
 				if (parColli == true) {
 					double numcolli = numberCollisions(particles[j]);
