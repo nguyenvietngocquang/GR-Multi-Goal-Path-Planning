@@ -49,23 +49,31 @@ public class GUIRobotics {
 		mainFrame.setVisible(true);
 	}
 
-	public void generateEnvironment(String obtacles_file) {
+	public void generateEnvironment(String obstacles_file) {
 		canvas = new MyCanvas();
 
 		controlPanel.add(canvas);
 
-		// Draw obstacles
-		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles(obtacles_file);
+		// draw obstacles
+		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles(obstacles_file);
+
+		Graphics2D g2 = (Graphics2D) canvas.getGraphics();
 
 		for (ObstaclesGraph obstacle : obstacles) {
-			for (int i = 0; i < obstacle.points.size() - 1; i++) {
-				canvas.drawLine(obstacle.points.get(i), obstacle.points.get(i + 1));
+
+			Polygon polygon = new Polygon();
+			for (int i = 0; i < obstacle.points.size(); i++) {
+				polygon.addPoint((int) (MyCanvas.OX + obstacle.points.get(i).x * size / range),
+						(int) (MyCanvas.OY - obstacle.points.get(i).y * size / range));
 			}
-			canvas.drawLine(obstacle.points.get(0), obstacle.points.get(obstacle.points.size() - 1));
+			g2.fill(polygon);
+			for (int i = 0; i < obstacle.points.size() - 1; i++) {
+				canvas.drawLine(obstacle.points.get(i), obstacle.points.get(i + 1), Color.BLACK);
+			}
+			canvas.drawLine(obstacle.points.get(0), obstacle.points.get(obstacle.points.size() - 1), Color.BLACK);
 		}
 
 		// draw Oxy
-		Graphics2D g2 = (Graphics2D) canvas.getGraphics();
 		g2.drawLine(MyCanvas.OX, MyCanvas.OY, MyCanvas.OY, MyCanvas.OY);
 		g2.drawLine(MyCanvas.OX, MyCanvas.OY, MyCanvas.OX, MyCanvas.OX);
 		g2.drawString("O", MyCanvas.OX - 10, MyCanvas.OY + 10);

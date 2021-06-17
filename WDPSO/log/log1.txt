@@ -1,0 +1,120 @@
+Iteration 1:
+	Length:	223.73153616855984
+	Time:	1.287s
+
+Iteration 2:
+	Length:	223.72606497197302
+	Time:	1.196s
+
+Iteration 3:
+	Length:	223.7299464535006
+	Time:	1.149s
+
+Iteration 4:
+	Length:	223.75132107846048
+	Time:	1.133s
+
+Iteration 5:
+	Length:	223.72289903130564
+	Time:	1.154s
+
+Iteration 6:
+	Length:	223.72197387949868
+	Time:	1.106s
+
+Iteration 7:
+	Length:	223.7304021429614
+	Time:	1.153s
+
+Iteration 8:
+	Length:	223.7261232043865
+	Time:	1.092s
+
+Iteration 9:
+	Length:	223.72263863979288
+	Time:	1.147s
+
+Iteration 10:
+	Length:	223.7236661150096
+	Time:	1.107s
+
+Iteration 11:
+	Length:	223.72388281761158
+	Time:	1.149s
+
+Iteration 12:
+	Length:	223.72232329238926
+	Time:	1.157s
+
+Iteration 13:
+	Length:	223.72716925272601
+	Time:	1.132s
+
+Iteration 14:
+	Length:	223.72584053092464
+	Time:	1.156s
+
+Iteration 15:
+	Length:	223.72313303491802
+	Time:	1.109s
+
+Iteration 16:
+	Length:	223.73307151035814
+	Time:	1.158s
+
+Iteration 17:
+	Length:	223.72279235674029
+	Time:	1.095s
+
+Iteration 18:
+	Length:	223.72556344770808
+	Time:	1.136s
+
+Iteration 19:
+	Length:	223.72646769469037
+	Time:	1.101s
+
+Iteration 20:
+	Length:	223.7232280004883
+	Time:	1.159s
+
+Iteration 21:
+	Length:	223.72235911085608
+	Time:	1.092s
+
+Iteration 22:
+	Length:	223.72199942393837
+	Time:	1.128s
+
+Iteration 23:
+	Length:	223.72797578915845
+	Time:	1.138s
+
+Iteration 24:
+	Length:	223.726035965027
+	Time:	1.096s
+
+Iteration 25:
+	Length:	223.72233167622312
+	Time:	1.151s
+
+Iteration 26:
+	Length:	223.7253494881149
+	Time:	1.089s
+
+Iteration 27:
+	Length:	223.72440893545232
+	Time:	1.141s
+
+Iteration 28:
+	Length:	223.7257849649568
+	Time:	1.111s
+
+Iteration 29:
+	Length:	223.72333928580912
+	Time:	1.171s
+
+Iteration 30:
+	Length:	223.72414796167845
+	Time:	1.089s
+

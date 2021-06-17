@@ -97,7 +97,7 @@ public class PSO {
 		return path;
 	}
 
-	// single-objective
+	// Single-objective
 	public void initializeNaNb() {
 		for (int i = 0; i < Nmax; i++) {
 			NaParticles[i] = new Path(numR);
@@ -325,7 +325,7 @@ public class PSO {
 		V_MIN = minAngle;
 		initialize(numR);
 
-		// initialize pBest
+		// Initialize pBest
 		for (int i = 0; i < NP; i++) {
 			double angles[] = new double[numR];
 			Point points[] = new Point[numR];
@@ -346,7 +346,7 @@ public class PSO {
 
 		// PSO
 		for (int i = 0; i < IT; i++) {
-			// update particles
+			// Update particles
 			w = wMax - ((wMax - wMin) * i / IT);
 			for (int j = 0; j < NP; j++) {
 				for (int k = 0; k < numR; k++) {
@@ -365,7 +365,7 @@ public class PSO {
 				}
 				particles[j].distance();
 
-				// mutate
+				// Mutate if collide
 				pathColli = pathCollision(particles[j]);
 				if (pathColli) {
 					double countColli = numberCollisions(particles[j]);
@@ -409,7 +409,7 @@ public class PSO {
 				}
 			}
 
-			// select gBest
+			// Select gBest
 			gBestSelection(i);
 		}
 
@@ -430,7 +430,7 @@ public class PSO {
 		result.removeLast();
 		result.removeFirst();
 	}
-	// end single-objective
+	// End single-objective
 
 	// Tra lai tap cac index tu cao den thap
 	public int[] indexRank(int[] rank) {
@@ -480,8 +480,9 @@ public class PSO {
 		return count;
 	}
 
-	public double calculateAngle(Point b, Point a, Point c) { // calculate angle BAC
-		// vectors
+	// Calculate angle BAC
+	public double calculateAngle(Point b, Point a, Point c) {
+		// Vectors
 		Point v1 = new Point(b.x - a.x, b.y - a.y);
 		Point v2 = new Point(c.x - a.x, c.y - a.y);
 		double cos = (v1.x * v2.x + v1.y * v2.y) / (Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y));
@@ -548,7 +549,7 @@ public class PSO {
 		}
 	}
 
-//	// multi-objective
+//	// Multi-objective
 //	public void initializeNaNb() {
 //		for (int i = 0; i < Nmax; i++) {
 //			NaParticles[i] = new Path(numR);
@@ -581,7 +582,7 @@ public class PSO {
 //			}
 //		}
 //
-//		// select the best CD particle as Gbest
+//		// Select the best CD particle as gBest
 //		if (NaNull == true) {
 //			CD = crowdingDistance(NbParticles);
 //			bestCD = CD[0];
@@ -830,7 +831,7 @@ public class PSO {
 //						newPar[Nmax].distance = par.distance;
 //
 //						CD = crowdingDistance(newPar);
-//						// find worst CD to remove
+//						// Find worst CD to remove
 //						worstCD = CD[0];
 //						worstCDid = 0;
 //						for (int i = 0; i != Nmax + 1; i++) {
@@ -839,7 +840,7 @@ public class PSO {
 //								worstCDid = i;
 //							}
 //						}
-//						// thay the Na particle co CD thap nhat
+//						// Thay the Na particle co CD thap nhat
 //						if (worstCDid != Nmax) {
 //							for (int i = 0; i != numR; i++) {
 //								NaParticles[worstCDid].angles[i] = par.angles[i];
@@ -938,7 +939,7 @@ public class PSO {
 //				}
 //				particles[j].distance();
 //
-//				// MUTATE IF COLLIDE
+//				// Mutate if collide
 //				parColli = pathCollision(particles[j]);
 //				if (parColli == true) {
 //					double numcolli = numberCollisions(particles[j]);
@@ -1013,6 +1014,6 @@ public class PSO {
 //		result.removeLast();
 //		result.removeFirst();
 //	}
-//	// end multi-objective
+//	// End multi-objective
 
 }
