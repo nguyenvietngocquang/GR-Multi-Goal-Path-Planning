@@ -34,6 +34,7 @@ public class Main {
 				result.add(pso.result.get(j));
 			}
 			result.add(pointsToVisit.get(1));
+			System.out.println("Length:\t" + pso.length);
 
 			gui.canvas.drawLines(result, pointsToVisit);
 		} catch (Exception e) {
@@ -42,7 +43,7 @@ public class Main {
 		}
 
 		time = System.currentTimeMillis() - time;
-		System.out.println("Time:\t" + time + " ms");
+		System.out.println("Time:\t" + time / 1000F + "s");
 		System.out.println("Done!");
 	}
 

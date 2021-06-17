@@ -49,23 +49,31 @@ public class GUIRobotics {
 		mainFrame.setVisible(true);
 	}
 
-	public void generateEnvironment(String obtacles_file) {
+	public void generateEnvironment(String obstacles_file) {
 		canvas = new MyCanvas();
 
 		controlPanel.add(canvas);
 
-		// Draw obstacles
-		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles(obtacles_file);
+		// draw obstacles
+		ArrayList<ObstaclesGraph> obstacles = ObstaclesGraph.getObstacles(obstacles_file);
+
+		Graphics2D g2 = (Graphics2D) canvas.getGraphics();
 
 		for (ObstaclesGraph obstacle : obstacles) {
-			for (int i = 0; i < obstacle.points.size() - 1; i++) {
-				canvas.drawLine(obstacle.points.get(i), obstacle.points.get(i + 1));
+
+			Polygon polygon = new Polygon();
+			for (int i = 0; i < obstacle.points.size(); i++) {
+				polygon.addPoint((int) (MyCanvas.OX + obstacle.points.get(i).x * size / range),
+						(int) (MyCanvas.OY - obstacle.points.get(i).y * size / range));
 			}
-			canvas.drawLine(obstacle.points.get(0), obstacle.points.get(obstacle.points.size() - 1));
+			g2.fill(polygon);
+			for (int i = 0; i < obstacle.points.size() - 1; i++) {
+				canvas.drawLine(obstacle.points.get(i), obstacle.points.get(i + 1), Color.BLACK);
+			}
+			canvas.drawLine(obstacle.points.get(0), obstacle.points.get(obstacle.points.size() - 1), Color.BLACK);
 		}
 
 		// draw Oxy
-		Graphics2D g2 = (Graphics2D) canvas.getGraphics();
 		g2.drawLine(MyCanvas.OX, MyCanvas.OY, MyCanvas.OY, MyCanvas.OY);
 		g2.drawLine(MyCanvas.OX, MyCanvas.OY, MyCanvas.OX, MyCanvas.OX);
 		g2.drawString("O", MyCanvas.OX - 10, MyCanvas.OY + 10);
@@ -172,35 +180,6 @@ public class GUIRobotics {
 			g2.setColor(Color.BLUE);
 			g2.draw(new Line2D.Double(OX + pt1.x * alpha, OY - pt1.y * alpha, OX + pt2.x * alpha, OY - pt2.y * alpha));
 		}
-	}
-
-	public static void main(String[] args) throws FileNotFoundException {
-
-		GUIRobotics gui = new GUIRobotics(600, 110, 11);
-		gui.generateEnvironment("obstacles.txt");
-
-		System.setIn(new FileInputStream("maklink.txt"));
-		Scanner sc = new Scanner(System.in);
-
-		sc.nextLine();
-		String string = sc.nextLine();
-		while (!string.equals("-1")) {
-
-			// Read path planning
-			String numbers[] = string.replaceAll(",", "").replaceAll("\\(", "").replaceAll("\\)", "").split("\\s+");
-
-			ArrayList<Point> points = new ArrayList<>();
-			for (int i = 0; i < numbers.length / 2; i++) {
-				points.add(new Point(Double.parseDouble(numbers[2 * i]), Double.parseDouble(numbers[2 * i + 1])));
-			}
-
-			for (int i = 0; i < points.size() / 2; i++) {
-				gui.canvas.drawLineWithoutMiddle(points.get(2 * i), points.get(2 * i + 1));
-			}
-
-			string = sc.nextLine();
-		}
-		sc.close();
 	}
 
 }
